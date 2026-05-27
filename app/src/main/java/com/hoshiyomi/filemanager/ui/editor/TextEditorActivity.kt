@@ -1,6 +1,7 @@
 package com.hoshiyomi.filemanager.ui.editor
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -77,11 +78,13 @@ class TextEditorActivity : AppCompatActivity() {
                         true
                     }
                     R.id.action_undo -> {
-                        binding.editTextContent.undo()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            binding.editTextContent.undo()
+ }
                         true
                     }
                     R.id.action_redo -> {
-                        if (binding.editTextContent.canRedo()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && binding.editTextContent.canRedo()) {
                             binding.editTextContent.redo()
                         }
                         true

@@ -78,11 +78,11 @@ class TextEditorActivity : AppCompatActivity() {
                         true
                     }
                     R.id.action_undo -> {
-                        binding.editTextContent.dispatchKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, android.view.KeyEvent.KEYCODE_Z, android.view.META_CTRL_MASK))
+                        binding.editTextContent.onKeyDown(android.view.KeyEvent.KEYCODE_Z, android.view.KeyEvent(0, android.view.KeyEvent.KEYCODE_Z, 0, android.view.KeyEvent.META_CTRL_ON))
                         true
                     }
                     R.id.action_redo -> {
-                        binding.editTextContent.dispatchKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, android.view.KeyEvent.KEYCODE_Z, android.view.META_CTRL_MASK or android.view.META_SHIFT_MASK))
+                        binding.editTextContent.onKeyDown(android.view.KeyEvent.KEYCODE_Z, android.view.KeyEvent(0, android.view.KeyEvent.KEYCODE_Z, 0, android.view.KeyEvent.META_CTRL_ON or android.view.KeyEvent.META_SHIFT_ON))
                         true
                     }
                     R.id.action_find_replace -> {

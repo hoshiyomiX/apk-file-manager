@@ -200,9 +200,9 @@ object ApkAnalyzer {
         }
 
         while (offset < bytes.size - 4) {
-            val eventType = readShort(bytes, offset)
+            val eventType = readShort(bytes, offset).toInt()
             when (eventType) {
-                0x0102.toInt() -> {
+                0x0102 -> {
                     val nameIdx = readInt(bytes, offset + 16)
                     val startTag = if (nameIdx < stringPool.size) stringPool[nameIdx] else "???"
                     sb.append("<$startTag")
@@ -232,13 +232,13 @@ object ApkAnalyzer {
                     sb.append(">\n")
                     offset += readShort(bytes, offset + 20).toInt() and 0xFFFF
                 }
-                0x0103.toInt() -> {
+                0x0103 -> {
                     val nameIdx = readInt(bytes, offset + 16)
                     val endTag = if (nameIdx < stringPool.size) stringPool[nameIdx] else "???"
                     sb.append("</$endTag>\n")
                     offset += readShort(bytes, offset + 20).toInt() and 0xFFFF
                 }
-                0x0101.toInt() -> {
+                0x0101 -> {
                     offset += readShort(bytes, offset + 20).toInt() and 0xFFFF
                 }
                 else -> {

@@ -78,15 +78,11 @@ class TextEditorActivity : AppCompatActivity() {
                         true
                     }
                     R.id.action_undo -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            binding.editTextContent.undo()
- }
+                        binding.editTextContent.dispatchKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, android.view.KeyEvent.KEYCODE_Z, android.view.META_CTRL_MASK))
                         true
                     }
                     R.id.action_redo -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && binding.editTextContent.canRedo()) {
-                            binding.editTextContent.redo()
-                        }
+                        binding.editTextContent.dispatchKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, android.view.KeyEvent.KEYCODE_Z, android.view.META_CTRL_MASK or android.view.META_SHIFT_MASK))
                         true
                     }
                     R.id.action_find_replace -> {

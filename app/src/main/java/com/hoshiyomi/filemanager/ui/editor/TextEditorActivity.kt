@@ -78,11 +78,11 @@ class TextEditorActivity : AppCompatActivity() {
                         true
                     }
                     R.id.action_undo -> {
-                        Toast.makeText(this, "Use Ctrl+Z to undo", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@TextEditorActivity, "Use Ctrl+Z to undo", Toast.LENGTH_SHORT).show()
                         true
                     }
                     R.id.action_redo -> {
-                        Toast.makeText(this, "Use Ctrl+Shift+Z to redo", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@TextEditorActivity, "Use Ctrl+Shift+Z to redo", Toast.LENGTH_SHORT).show()
                         true
                     }
                     R.id.action_find_replace -> {

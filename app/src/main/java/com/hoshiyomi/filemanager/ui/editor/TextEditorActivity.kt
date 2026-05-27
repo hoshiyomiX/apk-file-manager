@@ -78,11 +78,11 @@ class TextEditorActivity : AppCompatActivity() {
                         true
                     }
                     R.id.action_undo -> {
-                        binding.editTextContent.onKeyDown(android.view.KeyEvent.KEYCODE_Z, android.view.KeyEvent(0, android.view.KeyEvent.KEYCODE_Z, 0, android.view.KeyEvent.META_CTRL_ON))
+                        Toast.makeText(this, "Use Ctrl+Z to undo", Toast.LENGTH_SHORT).show()
                         true
                     }
                     R.id.action_redo -> {
-                        binding.editTextContent.onKeyDown(android.view.KeyEvent.KEYCODE_Z, android.view.KeyEvent(0, android.view.KeyEvent.KEYCODE_Z, 0, android.view.KeyEvent.META_CTRL_ON or android.view.KeyEvent.META_SHIFT_ON))
+                        Toast.makeText(this, "Use Ctrl+Shift+Z to redo", Toast.LENGTH_SHORT).show()
                         true
                     }
                     R.id.action_find_replace -> {

@@ -115,9 +115,9 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
             for (file in clip.files) {
                 val dest = File(destDir, file.name)
                 lastResult = if (clip.isCut) {
-                    FileOperations.moveFile(file, dest)
+                    FileOperations.moveFile(file, dest).map { }
                 } else {
-                    FileOperations.copyFile(file, dest)
+                    FileOperations.copyFile(file, dest).map { }
                 }
                 if (lastResult.isFailure) break
             }

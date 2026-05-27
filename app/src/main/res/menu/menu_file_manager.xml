@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_new_folder"
+        android:icon="@drawable/ic_folder"
+        android:title="@string/action_new_folder"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_new_file"
+        android:icon="@drawable/ic_file"
+        android:title="@string/action_new_file"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/dialog_sort_title"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_show_hidden"
+        android:title="@string/settings_show_hidden_files"
+        android:checkable="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_select_all"
+        android:title="@string/action_select_all"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_bookmark"
+        android:icon="@drawable/ic_bookmark"
+        android:title="@string/action_bookmark"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_compress"
+        android:icon="@drawable/ic_archive"
+        android:title="@string/action_compress"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_extract"
+        android:title="@string/action_extract"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_paste"
+        android:title="@string/action_paste"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_properties"
+        android:title="@string/action_properties"
+        app:showAsAction="never" />
+
+</menu>

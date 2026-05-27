@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/file_item_height"
+    android:background="@drawable/bg_file_item"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingHorizontal="@dimen/file_item_padding">
+
+    <ImageView
+        android:id="@+id/ivFileIcon"
+        android:layout_width="@dimen/file_icon_size"
+        android:layout_height="@dimen/file_icon_size"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:contentDescription="@string/info_type"
+        android:src="@drawable/ic_file"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/file_icon_color" />
+
+    <TextView
+        android:id="@+id/tvFileName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_md"
+        android:layout_marginEnd="@dimen/spacing_sm"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/md_theme_on_surface"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvFileDetails"
+        app:layout_constraintEnd_toStartOf="@+id/cbSelected"
+        app:layout_constraintStart_toEndOf="@+id/ivFileIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="filename.txt" />
+
+    <TextView
+        android:id="@+id/tvFileDetails"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_md"
+        android:layout_marginEnd="@dimen/spacing_sm"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/md_theme_on_surface_variant"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cbSelected"
+        app:layout_constraintStart_toEndOf="@+id/ivFileIcon"
+        app:layout_constraintTop_toBottomOf="@+id/tvFileName"
+        tools:text="1.2 MB  •  2024-01-15" />
+
+    <CheckBox
+        android:id="@+id/cbSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_sm"
+        android:buttonTint="@color/md_theme_primary"
+        android:contentDescription="@string/selected"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

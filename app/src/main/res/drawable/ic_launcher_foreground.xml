@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- FM monogram -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,36h8v32h-8v-8h-6v-4h6v-6h-6v-4h6v-6h-6v-4z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,36h8v6h-6v4h6v8h-6v4h6v10h-8v-10h6v-4h-6v-8h6v-4h-6z" />
+    <!-- Folder shape at bottom -->
+    <path
+        android:fillColor="#A4F5D6"
+        android:pathData="M30,72h48v12h-48z"
+        android:fillAlpha="0.7" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,72h20v-4h-4l-3,-4h-13z"
+        android:fillAlpha="0.9" />
+</vector>

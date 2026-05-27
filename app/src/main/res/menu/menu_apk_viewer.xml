@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/ic_share"
+        android:title="@string/action_share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_sign_apk"
+        android:icon="@drawable/ic_certificate"
+        android:title="@string/apk_sign_apk"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_extract_all"
+        android:icon="@drawable/ic_archive"
+        android:title="@string/apk_extract_all"
+        app:showAsAction="never" />
+
+</menu>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sort_options">
+        <item>@string/sort_name</item>
+        <item>@string/sort_size</item>
+        <item>@string/sort_date</item>
+        <item>@string/sort_type</item>
+    </string-array>
+    <string-array name="sort_values">
+        <item>name</item>
+        <item>size</item>
+        <item>date</item>
+        <item>type</item>
+    </string-array>
+</resources>

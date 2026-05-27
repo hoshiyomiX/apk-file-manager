@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/settings_appearance"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            android:key="dark_mode"
+            android:title="@string/settings_dark_mode"
+            android:summary="@string/settings_dark_mode_desc"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="dual_panel"
+            android:title="@string/settings_dual_panel"
+            android:summary="@string/settings_dual_panel_desc"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_general"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            android:key="show_hidden_files"
+            android:title="@string/settings_show_hidden_files"
+            android:summary="@string/settings_show_hidden_files_desc"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="sort_by"
+            android:title="@string/settings_sort_by"
+            android:summary="@string/settings_sort_by_desc"
+            android:entries="@array/sort_options"
+            android:entryValues="@array/sort_values"
+            android:defaultValue="name" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_about"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            android:key="version"
+            android:title="Version"
+            android:summary="1.0.0" />
+
+        <Preference
+            android:key="description"
+            android:title="Description"
+            android:summary="@string/about_description"
+            android:selectable="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

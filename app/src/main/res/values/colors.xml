@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="md_theme_primary">#1B6B52</color>
+    <color name="md_theme_on_primary">#FFFFFF</color>
+    <color name="md_theme_primary_container">#A4F5D6</color>
+    <color name="md_theme_on_primary_container">#002117</color>
+    <color name="md_theme_secondary">#4C6358</color>
+    <color name="md_theme_on_secondary">#FFFFFF</color>
+    <color name="md_theme_secondary_container">#CEE9D9</color>
+    <color name="md_theme_on_secondary_container">#082017</color>
+    <color name="md_theme_tertiary">#3E6373</color>
+    <color name="md_theme_on_tertiary">#FFFFFF</color>
+    <color name="md_theme_tertiary_container">#C1E8FB</color>
+    <color name="md_theme_on_tertiary_container">#001F29</color>
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_on_error">#FFFFFF</color>
+    <color name="md_theme_error_container">#FFDAD6</color>
+    <color name="md_theme_on_error_container">#410002</color>
+    <color name="md_theme_background">#FBFDF8</color>
+    <color name="md_theme_on_background">#191C1A</color>
+    <color name="md_theme_surface">#FBFDF8</color>
+    <color name="md_theme_on_surface">#191C1A</color>
+    <color name="md_theme_surface_variant">#DDE5DB</color>
+    <color name="md_theme_on_surface_variant">#414942</color>
+    <color name="md_theme_outline">#717971</color>
+    <color name="md_theme_outline_variant">#C1C9BF</color>
+
+    <!-- File item colors -->
+    <color name="file_icon_color">#78909C</color>
+    <color name="folder_icon_color">#FFA726</color>
+    <color name="apk_icon_color">#66BB6A</color>
+    <color name="image_icon_color">#AB47BC</color>
+    <color name="video_icon_color">#EF5350</color>
+    <color name="audio_icon_color">#29B6F6</color>
+    <color name="text_icon_color">#8D6E63</color>
+    <color name="archive_icon_color">#8D6E63</color>
+
+    <!-- Selection -->
+    <color name="selection_background">#1B6B5220</color>
+    <color name="divider_color">#E0E0E0</color>
+</resources>

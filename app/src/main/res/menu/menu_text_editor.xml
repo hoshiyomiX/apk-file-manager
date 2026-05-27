@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_save"
+        android:title="@string/action_save"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_undo"
+        android:title="@string/action_undo"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_redo"
+        android:title="@string/action_redo"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_find_replace"
+        android:title="@string/action_find"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_word_wrap"
+        android:title="@string/action_word_wrap"
+        android:checkable="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_encoding"
+        android:title="@string/action_encoding"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_go_to_line"
+        android:title="@string/action_go_to_line"
+        app:showAsAction="never" />
+
+</menu>

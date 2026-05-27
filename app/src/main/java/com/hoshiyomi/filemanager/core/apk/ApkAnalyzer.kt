@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable
 import com.hoshiyomi.filemanager.core.file.FileOperations
 import com.hoshiyomi.filemanager.model.ApkInfo
 import com.hoshiyomi.filemanager.model.CertificateInfo
+import com.hoshiyomi.filemanager.model.FileItem
+import com.hoshiyomi.filemanager.util.DiagnosticLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -28,25 +30,115 @@ data class ZipEntryInfo(
 
 object ApkAnalyzer {
 
+    /** Analyze APK with full diagnostic logging. Call DiagnosticLogger.newSession() before this. */
     suspend fun analyzeApk(context: Context, apkFile: File): Result<ApkInfo> =
         withContext(Dispatchers.IO) {
             runCatching {
                 if (!apkFile.exists() || !apkFile.isFile) {
+                    DiagnosticLogger.error("APK-ERROR", "APK file not found", mapOf("path" to apkFile.absolutePath))
                     throw IllegalArgumentException("APK file not found: ${apkFile.absolutePath}")
                 }
+                val analysisStart = System.currentTimeMillis()
+
+                DiagnosticLogger.info("APK-START", "Beginning APK analysis", mapOf(
+                    "file" to apkFile.name,
+                    "size" to FileItem.formatFileSize(apkFile.length()),
+                    "size_bytes" to apkFile.length()
+                ))
+
+                // --- Package Info ---
+                val pkgStart = System.currentTimeMillis()
                 val packageInfo = getPackageInfoFromApk(context, apkFile)
+                DiagnosticLogger.timed("APK-PKG", "Package info extracted", pkgStart, mapOf(
+                    "package" to (packageInfo?.packageName ?: "(unknown)"),
+                    "version_name" to (packageInfo?.versionName ?: "?"),
+                    "version_code" to (if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) packageInfo?.longVersionCode else packageInfo?.versionCode?.toLong()),
+                    "min_sdk" to extractMinSdk(packageInfo),
+                    "target_sdk" to (packageInfo?.applicationInfo?.targetSdkVersion ?: 0),
+                    "debuggable" to ((packageInfo?.applicationInfo?.flags ?: 0) and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0),
+                    "shared_uid" to (packageInfo?.sharedUserId ?: "none")
+                ))
+
+                if (packageInfo == null) {
+                    DiagnosticLogger.warn("APK-PKG", "Failed to parse package info — APK may be corrupted or uses unsupported features")
+                }
+
+                // --- Manifest ---
+                val manifestStart = System.currentTimeMillis()
                 val manifestXml = parseManifest(apkFile).getOrDefault("")
+                DiagnosticLogger.timed("APK-MANIFEST", "Manifest parsed (${manifestXml.length} chars)", manifestStart)
+
+                // --- Permissions ---
+                val permStart = System.currentTimeMillis()
                 val permissions = extractPermissions(apkFile)
+                DiagnosticLogger.timed("APK-PERM", "Permissions extracted (${permissions.size} found)", permStart, mapOf(
+                    "permissions" to permissions
+                ))
+
+                // Dangerous permissions alert
+                val dangerousPerms = permissions.filter { it.contains("DANGEROUS") || listOf(
+                    "READ_CONTACTS", "WRITE_CONTACTS", "READ_CALL_LOG", "WRITE_CALL_LOG",
+                    "READ_SMS", "SEND_SMS", "RECEIVE_SMS", "READ_PHONE_STATE",
+                    "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION",
+                    "RECORD_AUDIO", "CAMERA", "READ_EXTERNAL_STORAGE", "BODY_SENSORS"
+                ).any { perm -> it.contains(perm) }
+                }
+                if (dangerousPerms.isNotEmpty()) {
+                    DiagnosticLogger.warn("APK-PERM", "Dangerous permissions detected", mapOf("count" to dangerousPerms.size, "perms" to dangerousPerms))
+                }
+
+                // --- Certificate ---
+                val certStart = System.currentTimeMillis()
                 val certificateInfo = extractCertificateInfo(apkFile)
+                if (certificateInfo != null) {
+                    DiagnosticLogger.timed("APK-CERT", "Certificate parsed", certStart, mapOf(
+                        "issuer" to certificateInfo.issuer,
+                        "subject" to certificateInfo.subject,
+                        "algorithm" to certificateInfo.algorithm,
+                        "valid_from" to certificateInfo.validFrom,
+                        "valid_to" to certificateInfo.validTo,
+                        "sha256" to certificateInfo.sha256Fingerprint,
+                        "sha1" to certificateInfo.sha1Fingerprint,
+                        "md5" to certificateInfo.md5Fingerprint
+                    ))
+                    // Check if cert is expired
+                    try {
+                        val now = System.currentTimeMillis()
+                        val certDate = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+                        val validTo = certDate.parse(certificateInfo.validTo)?.time ?: 0
+                        if (validTo > 0 && validTo < now) {
+                            DiagnosticLogger.warn("APK-CERT", "Certificate EXPIRED", mapOf("valid_to" to certificateInfo.validTo))
+                        }
+                    } catch (_: Exception) {}
+                } else {
+                    DiagnosticLogger.warn("APK-CERT", "No signing certificate found — APK is not signed or signature format unrecognized")
+                }
+
+                // --- SHA-256 ---
+                val hashStart = System.currentTimeMillis()
                 val sha256 = FileOperations.computeFileHash(apkFile, "SHA-256")
+                DiagnosticLogger.timed("APK-HASH", "SHA-256 computed", hashStart, mapOf("sha256" to sha256))
 
                 val appName = try {
                     packageInfo?.applicationInfo?.loadLabel(context.packageManager)?.toString() ?: ""
                 } catch (e: Exception) {
+                    DiagnosticLogger.debug("APK-PKG", "Failed to load app label", mapOf("error" to (e.message ?: "")))
                     ""
                 }
 
-                ApkInfo(
+                // --- Components ---
+                val activities = extractComponentNames(packageInfo, "activity")
+                val services = extractComponentNames(packageInfo, "service")
+                val receivers = extractComponentNames(packageInfo, "receiver")
+                val providers = extractComponentNames(packageInfo, "provider")
+                DiagnosticLogger.info("APK-COMP", "Components counted", mapOf(
+                    "activities" to activities.size,
+                    "services" to services.size,
+                    "receivers" to receivers.size,
+                    "providers" to providers.size
+                ))
+
+                val info = ApkInfo(
                     packageName = packageInfo?.packageName ?: "",
                     versionName = packageInfo?.versionName ?: "",
                     versionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
@@ -59,10 +151,10 @@ object ApkAnalyzer {
                     targetSdkVersion = packageInfo?.applicationInfo?.targetSdkVersion ?: 0,
                     appName = appName,
                     permissions = permissions,
-                    activities = extractComponentNames(packageInfo, "activity"),
-                    services = extractComponentNames(packageInfo, "service"),
-                    receivers = extractComponentNames(packageInfo, "receiver"),
-                    providers = extractComponentNames(packageInfo, "provider"),
+                    activities = activities,
+                    services = services,
+                    receivers = receivers,
+                    providers = providers,
                     features = extractFeatures(packageInfo),
                     isDebuggable = (packageInfo?.applicationInfo?.flags
                         ?: 0) and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0,
@@ -73,6 +165,18 @@ object ApkAnalyzer {
                     fileSize = apkFile.length(),
                     manifestXml = manifestXml
                 )
+
+                DiagnosticLogger.timed("APK-START", "Full analysis complete", analysisStart, mapOf(
+                    "file_size" to FileItem.formatFileSize(apkFile.length()),
+                    "app_name" to info.appName,
+                    "debuggable" to info.isDebuggable
+                ))
+
+                info
+            }.onFailure { e ->
+                DiagnosticLogger.error("APK-ERROR", "Analysis failed: ${e.javaClass.simpleName}: ${e.message}", mapOf(
+                    "file" to apkFile.name
+                ))
             }
         }
 
@@ -434,6 +538,7 @@ object ApkAnalyzer {
     suspend fun listApkContents(apkFile: File): List<ZipEntryInfo> =
         withContext(Dispatchers.IO) {
             val entries = mutableListOf<ZipEntryInfo>()
+            val startMs = System.currentTimeMillis()
             try {
                 ZipFile(apkFile).use { zip ->
                     val zipEntries = zip.entries()
@@ -450,7 +555,13 @@ object ApkAnalyzer {
                         )
                     }
                 }
-            } catch (_: Exception) {
+                DiagnosticLogger.timed("APK-FILES", "Archive contents listed (${entries.size} entries)", startMs, mapOf(
+                    "total_files" to entries.count { !it.isDirectory },
+                    "total_dirs" to entries.count { it.isDirectory },
+                    "total_size" to FileItem.formatFileSize(entries.filter { !it.isDirectory }.sumOf { it.size })
+                ))
+            } catch (e: Exception) {
+                DiagnosticLogger.error("APK-FILES", "Failed to list archive contents: ${e.message}")
             }
             entries.sortedWith(compareByDescending<ZipEntryInfo> { it.isDirectory }.thenBy { it.name.lowercase() })
         }

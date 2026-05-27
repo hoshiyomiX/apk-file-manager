@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_background">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:padding="@dimen/spacing_md">
+
+        <TextView
+            android:id="@+id/tvLogContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_theme_on_surface"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="2dp"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/log_empty"
+        android:textColor="@color/md_theme_on_surface_variant"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+</FrameLayout>

@@ -215,4 +215,20 @@
     <string name="file_type_code">Source Code</string>
     <string name="file_type_folder">Folder</string>
     <string name="file_type_unknown">Unknown File</string>
+
+    <!-- Logs / Diagnostics -->
+    <string name="log_title">Logs</string>
+    <string name="log_tab_summary">Summary</string>
+    <string name="log_tab_full">Full Log</string>
+    <string name="log_tab_compact">Compact</string>
+    <string name="log_copy_summary">Copy Summary</string>
+    <string name="log_copy_full">Copy Full Log</string>
+    <string name="log_view_full">View All Logs</string>
+    <string name="log_share">Share Logs</string>
+    <string name="log_clear">Clear Logs</string>
+    <string name="log_clear_title">Clear Logs</string>
+    <string name="log_clear_message">Are you sure you want to clear all diagnostic logs? This action cannot be undone.</string>
+    <string name="log_cleared">Logs cleared</string>
+    <string name="log_copied">%1$s copied to clipboard</string>
+    <string name="log_empty">No diagnostic logs available. Open an APK file to generate logs.</string>
 </resources>

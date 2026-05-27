@@ -65,6 +65,11 @@
             android:exported="false"
             android:parentActivityName=".ui.main.MainActivity" />
 
+        <activity
+            android:name=".ui.logs.LogViewerActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.apkviewer.ApkViewerActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

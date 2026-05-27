@@ -1,4 +1,4 @@
-name: Android CI/CD
+name: Android CI/CD - Auto Signed Build
 
 on:
   push:
@@ -8,6 +8,15 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Version name (e.g. 1.0.1)'
+        required: false
+        default: ''
+      version_code:
+        description: 'Version code (integer, e.g. 2)'
+        required: false
+        default: ''
 
 env:
   JAVA_DISTRIBUTION: temurin
@@ -34,20 +43,90 @@ jobs:
           validate-wrappers: false
           gradle-version: ${{ env.GRADLE_VERSION }}
 
-      - name: Build debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace
+      # ── Auto Sign: Decode keystore from GitHub Secrets ──
+      - name: Decode keystore
+        run: |
+          if [ -n "$SIGNING_KEYSTORE_BASE64" ]; then
+            echo "$SIGNING_KEYSTORE_BASE64" | base64 -d > app/release.jks
+            echo "✅ Keystore decoded successfully"
+            ls -la app/release.jks
+          else
+            echo "⚠️ SIGNING_KEYSTORE_BASE64 not set — build will use debug signing"
+          fi
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
 
-      - name: Build release APK
-        run: gradle assembleRelease --no-daemon --stacktrace
+      # ── Optional: Bump version from workflow_dispatch ──
+      - name: Bump version
+        if: github.event.inputs.version_name != ''
+        run: |
+          VERSION_NAME="${{ github.event.inputs.version_name }}"
+          VERSION_CODE="${{ github.event.inputs.version_code }}"
+          if [ -z "$VERSION_CODE" ]; then
+            # Auto-increment from current
+            CURRENT=$(grep 'versionCode' app/build.gradle.kts | head -1 | grep -oP '\\d+' | head -1)
+            VERSION_CODE=$((CURRENT + 1))
+          fi
+          sed -i "s/versionCode = [0-9]*/versionCode = $VERSION_CODE/" app/build.gradle.kts
+          sed -i "s/versionName = \".*\"/versionName = \"$VERSION_NAME\"/" app/build.gradle.kts
+          echo "📌 Version bumped to $VERSION_NAME ($VERSION_CODE)"
 
+      # ── Build signed debug APK ──
+      - name: Build debug APK (signed)
+        run: |
+          if [ -f app/release.jks ]; then
+            export SIGNING_KEYSTORE_PATH=release.jks
+            export SIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}
+            export SIGNING_KEY_ALIAS=${{ secrets.SIGNING_KEY_ALIAS }}
+            export SIGNING_KEY_PASSWORD=${{ secrets.SIGNING_KEY_PASSWORD }}
+          fi
+          cd app && ../gradlew assembleDebug --no-daemon --stacktrace && cd ..
+
+      # ── Build signed release APK ──
+      - name: Build release APK (signed)
+        run: |
+          if [ -f app/release.jks ]; then
+            export SIGNING_KEYSTORE_PATH=release.jks
+            export SIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}
+            export SIGNING_KEY_ALIAS=${{ secrets.SIGNING_KEY_ALIAS }}
+            export SIGNING_KEY_PASSWORD=${{ secrets.SIGNING_KEY_PASSWORD }}
+          fi
+          cd app && ../gradlew assembleRelease --no-daemon --stacktrace && cd ..
+
+      # ── Verify APK signatures ──
+      - name: Verify APK signatures
+        run: |
+          echo "=== Debug APK ==="
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/apksigner verify --print-certs app/build/outputs/apk/debug/*.apk || echo "Debug: debug-signed (expected if no release keystore)"
+          echo "=== Release APK ==="
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/apksigner verify --print-certs app/build/outputs/apk/release/*.apk || echo "Release: NOT signed — check secrets!"
+          echo "=== APK sizes ==="
+          ls -lh app/build/outputs/apk/debug/*.apk 2>/dev/null || echo "No debug APK found"
+          ls -lh app/build/outputs/apk/release/*.apk 2>/dev/null || echo "No release APK found"
+
+      # ── Upload artifacts ──
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
+          name: debug-apk-signed
           path: app/build/outputs/apk/debug/*.apk
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
+          name: release-apk-signed
           path: app/build/outputs/apk/release/*.apk
+
+      # ── Create GitHub Release (only on workflow_dispatch with version) ──
+      - name: Create GitHub Release
+        if: github.event.inputs.version_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version_name }}
+          name: "v${{ github.event.inputs.version_name }}"
+          files: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

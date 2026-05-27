@@ -6,6 +6,7 @@ import com.hoshiyomi.filemanager.model.SortOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.MessageDigest

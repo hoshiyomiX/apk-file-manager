@@ -69,7 +69,7 @@ object FileOperations {
                 if (!dir.mkdirs()) {
                     throw RuntimeException("Failed to create directory: ${dir.absolutePath}")
                 }
-                DiagnosticLogger.timed("FM-CREATE", "Created directory: ${dir.name}", start, mapOf(
+                DiagnosticLogger.timed("FM-CREATE", "Created directory: ${dir.name}", start, mapOf<String, Any>(
                     "path" to dir.absolutePath,
                     "parent" to parent.absolutePath
                 ))
@@ -96,7 +96,7 @@ object FileOperations {
                 if (!file.createNewFile()) {
                     throw RuntimeException("Failed to create file: ${file.absolutePath}")
                 }
-                DiagnosticLogger.timed("FM-CREATE", "Created file: ${file.name}", start, mapOf(
+                DiagnosticLogger.timed("FM-CREATE", "Created file: ${file.name}", start, mapOf<String, Any>(
                     "path" to file.absolutePath,
                     "parent" to parent.absolutePath
                 ))
@@ -126,7 +126,7 @@ object FileOperations {
                         }
                     }
                 }
-                DiagnosticLogger.timed("FM-COPY", "Copied: ${source.name}", start, mapOf(
+                DiagnosticLogger.timed("FM-COPY", "Copied: ${source.name}", start, mapOf<String, Any>(
                     "source" to source.absolutePath,
                     "destination" to destination.absolutePath,
                     "size" to source.length()
@@ -170,7 +170,7 @@ object FileOperations {
                     copyDirectoryRecursive(source, destination)
                     deleteFileInternal(source)
                 }
-                DiagnosticLogger.timed("FM-MOVE", "Moved: ${source.name}", start, mapOf(
+                DiagnosticLogger.timed("FM-MOVE", "Moved: ${source.name}", start, mapOf<String, Any>(
                     "source" to source.absolutePath,
                     "destination" to destination.absolutePath
                 ))
@@ -244,7 +244,7 @@ object FileOperations {
                     throw FileNotFoundException("File not found: ${file.absolutePath}")
                 }
                 deleteFileInternal(file)
-                DiagnosticLogger.timed("FM-DELETE", "Deleted: ${file.name}", start, mapOf(
+                DiagnosticLogger.timed("FM-DELETE", "Deleted: ${file.name}", start, mapOf<String, Any>(
                     "path" to file.absolutePath,
                     "type" to if (file.isDirectory) "directory" else "file"
                 ))
@@ -284,7 +284,7 @@ object FileOperations {
             val results = mutableListOf<FileItem>()
             val lowerQuery = query.lowercase()
             searchRecursive(directory, lowerQuery, results)
-            DiagnosticLogger.timed("FM-SEARCH", "Searched: '$query'", start, mapOf(
+            DiagnosticLogger.timed("FM-SEARCH", "Searched: '$query'", start, mapOf<String, Any>(
                 "root" to directory.absolutePath,
                 "results" to results.size
             ))

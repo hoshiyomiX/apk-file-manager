@@ -42,7 +42,7 @@
             android:gravity="top|start"
             android:imeOptions="flagNoExtractUi"
             android:inputType="textMultiLine|textNoSuggestions"
-            android:minWidth="match_parent"
+            android:minWidth="0dp"
             android:padding="@dimen/spacing_lg"
             android:textColor="@color/md_theme_on_surface"
             android:textColorHint="@color/md_theme_outline"

@@ -216,6 +216,18 @@
     <string name="file_type_folder">Folder</string>
     <string name="file_type_unknown">Unknown File</string>
 
+    <!-- Drawer Navigation -->
+    <string name="drawer_subtitle">File Manager</string>
+    <string name="drawer_home">Home</string>
+    <string name="drawer_downloads">Downloads</string>
+    <string name="drawer_images">Images</string>
+    <string name="drawer_videos">Videos</string>
+    <string name="drawer_music">Music</string>
+    <string name="drawer_documents">Documents</string>
+    <string name="drawer_apk_tools">APK Tools</string>
+    <string name="drawer_open_drawer">Open navigation drawer</string>
+    <string name="drawer_close_drawer">Close navigation drawer</string>
+
     <!-- Logs / Diagnostics -->
     <string name="log_title">Logs</string>
     <string name="log_tab_summary">Summary</string>

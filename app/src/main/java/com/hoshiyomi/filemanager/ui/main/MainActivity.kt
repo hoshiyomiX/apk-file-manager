@@ -15,8 +15,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.navigation.NavigationView
 import com.hoshiyomi.filemanager.R
 import com.hoshiyomi.filemanager.databinding.ActivityMainBinding
 import com.hoshiyomi.filemanager.ui.apkviewer.ApkViewerActivity
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
+        setupDrawer()
         setupBottomNavigation()
         handleIncomingIntent(intent)
         requestStoragePermission()
@@ -49,9 +53,77 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        binding.toolbar.setNavigationOnClickListener {
-            onNavigationClicked()
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
+    private fun setupDrawer() {
+        val toggle = androidx.appcompat.app.ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            binding.toolbar,
+            R.string.drawer_open_drawer,
+            R.string.drawer_close_drawer
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
+            handleDrawerItemClick(menuItem)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            true
         }
+
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: android.view.View, slideOffset: Float) {}
+            override fun onDrawerOpened(drawerView: android.view.View) {}
+            override fun onDrawerClosed(drawerView: android.view.View) {}
+            override fun onDrawerStateChanged(newState: Int) {}
+        })
+    }
+
+    private fun handleDrawerItemClick(item: MenuItem) {
+        when (item.itemId) {
+            R.id.drawer_home -> {
+                navigateDrawerTo(null)
+            }
+            R.id.drawer_downloads -> {
+                navigateDrawerTo(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
+            }
+            R.id.drawer_images -> {
+                navigateDrawerTo(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES))
+            }
+            R.id.drawer_videos -> {
+                navigateDrawerTo(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES))
+            }
+            R.id.drawer_music -> {
+                navigateDrawerTo(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC))
+            }
+            R.id.drawer_documents -> {
+                navigateDrawerTo(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS))
+            }
+            R.id.drawer_bookmarks -> {
+                val fragment = currentFragment
+                if (fragment is FileManagerFragment) {
+                    fragment.showBookmarksDialog()
+                }
+            }
+            R.id.drawer_apk_tools -> {
+                Toast.makeText(this, "Open an APK file to use APK Tools", Toast.LENGTH_SHORT).show()
+            }
+            R.id.drawer_logs -> {
+                startActivity(Intent(this, LogViewerActivity::class.java))
+            }
+            R.id.drawer_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
+        }
+    }
+
+    private fun navigateDrawerTo(targetDir: File?) {
+        val startPath = targetDir?.absolutePath
+        val fragment = FileManagerFragment.newInstance(startPath)
+        replaceFragment(fragment, "file_manager")
+        binding.bottomNavigation.menu.findItem(R.id.nav_files)?.isChecked = true
     }
 
     private fun setupBottomNavigation() {
@@ -96,6 +168,10 @@ class MainActivity : AppCompatActivity() {
     private fun setupBackPressed() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    return
+                }
                 if (supportFragmentManager.backStackEntryCount > 1) {
                     supportFragmentManager.popBackStack()
                 } else {
@@ -197,6 +273,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle drawer toggle first
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            return true
+        }
         return when (item.itemId) {
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
@@ -220,13 +301,6 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleIncomingIntent(intent)
-    }
-
-    private fun onNavigationClicked() {
-        val fragment = currentFragment
-        if (fragment is FileManagerFragment) {
-            fragment.toggleDualPanel()
-        }
     }
 
     override fun onRequestPermissionsResult(

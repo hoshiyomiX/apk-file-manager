@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/drawer_group_quick"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/drawer_home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/drawer_home" />
+
+        <item
+            android:id="@+id/drawer_downloads"
+            android:icon="@drawable/ic_download"
+            android:title="@string/drawer_downloads" />
+
+        <item
+            android:id="@+id/drawer_images"
+            android:icon="@drawable/ic_image"
+            android:title="@string/drawer_images" />
+
+        <item
+            android:id="@+id/drawer_videos"
+            android:icon="@drawable/ic_video"
+            android:title="@string/drawer_videos" />
+
+        <item
+            android:id="@+id/drawer_music"
+            android:icon="@drawable/ic_music"
+            android:title="@string/drawer_music" />
+
+        <item
+            android:id="@+id/drawer_documents"
+            android:icon="@drawable/ic_document"
+            android:title="@string/drawer_documents" />
+
+    </group>
+
+    <group android:id="@+id/drawer_group_tools"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/drawer_bookmarks"
+            android:icon="@drawable/ic_bookmark"
+            android:title="@string/bookmarks" />
+
+        <item
+            android:id="@+id/drawer_apk_tools"
+            android:icon="@drawable/ic_apk"
+            android:title="@string/drawer_apk_tools" />
+
+    </group>
+
+    <group android:id="@+id/drawer_group_settings"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/drawer_logs"
+            android:icon="@drawable/ic_logs"
+            android:title="@string/log_title" />
+
+        <item
+            android:id="@+id/drawer_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/title_settings" />
+
+    </group>
+
+</menu>

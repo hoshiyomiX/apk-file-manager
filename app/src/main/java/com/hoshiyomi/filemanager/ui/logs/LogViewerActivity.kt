@@ -1,5 +1,8 @@
 package com.hoshiyomi.filemanager.ui.logs
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -89,18 +92,18 @@ class LogViewerActivity : AppCompatActivity() {
     }
 
     private fun copyToClipboard(label: String, text: String) {
-        val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
-        val clip = android.content.ClipData.newPlainText(label, text)
+        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
         Toast.makeText(this, getString(R.string.log_copied, label), Toast.LENGTH_SHORT).show()
     }
 
     private fun shareLogs() {
         val logText = DiagnosticLogger.exportAsText()
-        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+        val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(android.content.Intent.EXTRA_SUBJECT, "APK Diagnostic Log")
-            putExtra(android.content.Intent.EXTRA_TEXT, logText)
+            putExtra(Intent.EXTRA_SUBJECT, "APK Diagnostic Log")
+            putExtra(Intent.EXTRA_TEXT, logText)
         }
         startActivity(Intent.createChooser(intent, getString(R.string.log_share)))
     }

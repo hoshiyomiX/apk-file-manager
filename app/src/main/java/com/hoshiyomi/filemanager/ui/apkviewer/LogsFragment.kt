@@ -1,13 +1,19 @@
 package com.hoshiyomi.filemanager.ui.apkviewer
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.hoshiyomi.filemanager.R
+import com.hoshiyomi.filemanager.ui.logs.LogViewerActivity
 import com.hoshiyomi.filemanager.util.DiagnosticLogger
 
 /**
@@ -15,7 +21,7 @@ import com.hoshiyomi.filemanager.util.DiagnosticLogger
  */
 class LogsFragment : Fragment() {
 
-    private var _binding: android.widget.FrameLayout? = null
+    private var _binding: View? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,7 +29,7 @@ class LogsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(R.layout.fragment_logs_tab, container, false)
-        _binding = root as android.widget.FrameLayout
+        _binding = root
 
         val scrollView = root.findViewById<ScrollView>(R.id.scrollView)
         val tvLogContent = root.findViewById<TextView>(R.id.tvLogContent)
@@ -43,15 +49,14 @@ class LogsFragment : Fragment() {
         }
 
         btnCopy.setOnClickListener {
-            val clipboard = requireContext().getSystemService(android.content.ClipboardService) as android.content.ClipboardManager
-            val clip = android.content.ClipData.newPlainText("APK Analysis", summary)
+            val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("APK Analysis", summary)
             clipboard.setPrimaryClip(clip)
-            android.widget.Toast.makeText(requireContext(), getString(R.string.log_copied, "Summary"), android.widget.Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.log_copied, "Summary"), Toast.LENGTH_SHORT).show()
         }
 
         btnFullLog.setOnClickListener {
-            val intent = android.content.Intent(requireContext(), com.hoshiyomi.filemanager.ui.logs.LogViewerActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(requireContext(), LogViewerActivity::class.java))
         }
 
         return root

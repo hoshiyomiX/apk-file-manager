@@ -52,7 +52,7 @@ object ApkAnalyzer {
                 DiagnosticLogger.timed("APK-PKG", "Package info extracted", pkgStart, mapOf(
                     "package" to (packageInfo?.packageName ?: "(unknown)"),
                     "version_name" to (packageInfo?.versionName ?: "?"),
-                    "version_code" to (if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) packageInfo?.longVersionCode else packageInfo?.versionCode?.toLong()),
+                    "version_code" to (if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) (packageInfo?.longVersionCode ?: 0L) else (packageInfo?.versionCode?.toLong() ?: 0L)),
                     "min_sdk" to extractMinSdk(packageInfo),
                     "target_sdk" to (packageInfo?.applicationInfo?.targetSdkVersion ?: 0),
                     "debuggable" to ((packageInfo?.applicationInfo?.flags ?: 0) and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0),

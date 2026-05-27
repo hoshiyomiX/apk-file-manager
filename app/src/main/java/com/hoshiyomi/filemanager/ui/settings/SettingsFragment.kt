@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import com.hoshiyomi.filemanager.R
 import com.hoshiyomi.filemanager.util.ThemeManager
+import com.hoshiyomi.filemanager.util.ThemeMode
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -15,7 +16,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onCreate(savedInstanceState)
         findPreference<androidx.preference.SwitchPreferenceCompat>("dark_mode")?.setOnPreferenceChangeListener { _, newValue ->
             val darkMode = newValue as Boolean
-            ThemeManager.applyTheme(requireContext(), darkMode)
+            val mode = if (darkMode) ThemeMode.DARK else ThemeMode.LIGHT
+            ThemeManager.applyTheme(requireContext(), mode)
             true
         }
     }

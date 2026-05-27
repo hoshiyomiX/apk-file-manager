@@ -21,7 +21,7 @@ object FileOperations {
         sortOrder: SortOrder
     ): List<FileItem> = withContext(Dispatchers.IO) {
         if (!directory.exists() || !directory.isDirectory) {
-            DiagnosticLogger.warn("FM-LIST", "Cannot list directory", mapOf(
+            DiagnosticLogger.warn("FM-LIST", "Cannot list directory", mapOf<String, Any>(
                 "path" to directory.absolutePath,
                 "exists" to directory.exists(),
                 "is_directory" to directory.isDirectory
@@ -31,7 +31,7 @@ object FileOperations {
 
         val files = directory.listFiles()
         if (files == null) {
-            DiagnosticLogger.error("FM-LIST", "listFiles() returned null", mapOf(
+            DiagnosticLogger.error("FM-LIST", "listFiles() returned null", mapOf<String, Any>(
                 "path" to directory.absolutePath,
                 "can_read" to directory.canRead(),
                 "can_write" to directory.canWrite()
@@ -75,9 +75,9 @@ object FileOperations {
                 ))
                 dir
             }.onFailure { e ->
-                DiagnosticLogger.error("FM-CREATE", "Failed to create directory: $name", mapOf(
+                DiagnosticLogger.error("FM-CREATE", "Failed to create directory: $name", mapOf<String, Any>(
                     "parent" to parent.absolutePath,
-                    "error" to e.message ?: "unknown"
+                    "error" to (e.message ?: "unknown")
                 ))
             }
         }
@@ -102,9 +102,9 @@ object FileOperations {
                 ))
                 file
             }.onFailure { e ->
-                DiagnosticLogger.error("FM-CREATE", "Failed to create file: $name", mapOf(
+                DiagnosticLogger.error("FM-CREATE", "Failed to create file: $name", mapOf<String, Any>(
                     "parent" to parent.absolutePath,
-                    "error" to e.message ?: "unknown"
+                    "error" to (e.message ?: "unknown")
                 ))
             }
         }
@@ -133,10 +133,10 @@ object FileOperations {
                 ))
                 destination
             }.onFailure { e ->
-                DiagnosticLogger.error("FM-COPY", "Copy failed: ${source.name}", mapOf(
+                DiagnosticLogger.error("FM-COPY", "Copy failed: ${source.name}", mapOf<String, Any>(
                     "source" to source.absolutePath,
                     "destination" to destination.absolutePath,
-                    "error" to e.message ?: "unknown"
+                    "error" to (e.message ?: "unknown")
                 ))
             }
         }
@@ -176,10 +176,10 @@ object FileOperations {
                 ))
                 destination
             }.onFailure { e ->
-                DiagnosticLogger.error("FM-MOVE", "Move failed: ${source.name}", mapOf(
+                DiagnosticLogger.error("FM-MOVE", "Move failed: ${source.name}", mapOf<String, Any>(
                     "source" to source.absolutePath,
                     "destination" to destination.absolutePath,
-                    "error" to e.message ?: "unknown"
+                    "error" to (e.message ?: "unknown")
                 ))
             }
         }
@@ -222,16 +222,16 @@ object FileOperations {
                 if (!file.renameTo(newFile)) {
                     throw RuntimeException("Failed to rename ${file.name} to $newName")
                 }
-                DiagnosticLogger.info("FM-RENAME", "Renamed: ${file.name} -> $newName", mapOf(
+                DiagnosticLogger.info("FM-RENAME", "Renamed: ${file.name} -> $newName", mapOf<String, Any>(
                     "path" to file.absolutePath,
                     "new_path" to newFile.absolutePath
                 ))
                 newFile
             }.onFailure { e ->
-                DiagnosticLogger.error("FM-RENAME", "Rename failed: ${file.name}", mapOf(
+                DiagnosticLogger.error("FM-RENAME", "Rename failed: ${file.name}", mapOf<String, Any>(
                     "path" to file.absolutePath,
                     "new_name" to newName,
-                    "error" to e.message ?: "unknown"
+                    "error" to (e.message ?: "unknown")
                 ))
             }
         }
@@ -249,9 +249,9 @@ object FileOperations {
                     "type" to if (file.isDirectory) "directory" else "file"
                 ))
             }.onFailure { e ->
-                DiagnosticLogger.error("FM-DELETE", "Delete failed: ${file.name}", mapOf(
+                DiagnosticLogger.error("FM-DELETE", "Delete failed: ${file.name}", mapOf<String, Any>(
                     "path" to file.absolutePath,
-                    "error" to e.message ?: "unknown"
+                    "error" to (e.message ?: "unknown")
                 ))
             }
         }

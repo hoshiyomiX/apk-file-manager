@@ -194,7 +194,7 @@ object ApkAnalyzer {
         val resourceIds = mutableListOf<Int>()
         if (offset < bytes.size) {
             val chunkType = readShort(bytes, offset)
-            if (chunkType == 0x0180) {
+            if (chunkType.toInt() == 0x0180) {
                 offset = readResourceIdPool(bytes, offset, resourceIds)
             }
         }
@@ -202,7 +202,7 @@ object ApkAnalyzer {
         while (offset < bytes.size - 4) {
             val eventType = readShort(bytes, offset)
             when (eventType) {
-                0x0102 -> {
+                0x0102.toInt() -> {
                     val nameIdx = readInt(bytes, offset + 16)
                     val startTag = if (nameIdx < stringPool.size) stringPool[nameIdx] else "???"
                     sb.append("<$startTag")
@@ -232,13 +232,13 @@ object ApkAnalyzer {
                     sb.append(">\n")
                     offset += readShort(bytes, offset + 20).toInt() and 0xFFFF
                 }
-                0x0103 -> {
+                0x0103.toInt() -> {
                     val nameIdx = readInt(bytes, offset + 16)
                     val endTag = if (nameIdx < stringPool.size) stringPool[nameIdx] else "???"
                     sb.append("</$endTag>\n")
                     offset += readShort(bytes, offset + 20).toInt() and 0xFFFF
                 }
-                0x0101 -> {
+                0x0101.toInt() -> {
                     offset += readShort(bytes, offset + 20).toInt() and 0xFFFF
                 }
                 else -> {

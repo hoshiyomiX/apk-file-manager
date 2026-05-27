@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.security.cert.CertificateFactory
@@ -283,7 +284,7 @@ object ApkAnalyzer {
                 val strOffset = readInt(bytes, offset + 20 + i * 4)
                 val pos = stringOffset + strOffset
                 if (pos + 4 <= bytes.size) {
-                    val len = readShort(bytes, pos)
+                    val len = readShort(bytes, pos).toInt()
                     val charStart = pos + 4
                     if (charStart + len * 2 <= bytes.size) {
                         val chars = CharArray(len)

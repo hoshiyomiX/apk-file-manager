@@ -21,6 +21,7 @@ import com.hoshiyomi.filemanager.R
 import com.hoshiyomi.filemanager.databinding.ActivityMainBinding
 import com.hoshiyomi.filemanager.ui.apkviewer.ApkViewerActivity
 import com.hoshiyomi.filemanager.ui.filemanager.FileManagerFragment
+import com.hoshiyomi.filemanager.ui.logs.LogViewerActivity
 import com.hoshiyomi.filemanager.ui.settings.SettingsActivity
 import com.hoshiyomi.filemanager.util.FileUtils
 import java.io.File
@@ -206,6 +207,10 @@ class MainActivity : AppCompatActivity() {
                 if (fragment is FileManagerFragment) {
                     fragment.showBookmarksDialog()
                 }
+                true
+            }
+            R.id.action_logs -> {
+                startActivity(Intent(this, LogViewerActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)

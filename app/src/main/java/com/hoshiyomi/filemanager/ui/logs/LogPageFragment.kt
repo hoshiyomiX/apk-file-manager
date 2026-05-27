@@ -55,7 +55,7 @@ class LogPageFragment : Fragment() {
         val tvEmpty = view.findViewById<TextView>(R.id.tvEmpty)
 
         val logText = when (mode) {
-            Mode.SUMMARY -> DiagnosticLogger.buildApkDiagnosticSummary()
+            Mode.SUMMARY -> DiagnosticLogger.buildAppDiagnosticSummary()
             Mode.FULL -> DiagnosticLogger.exportAsText()
             Mode.COMPACT -> DiagnosticLogger.exportAsCompact()
         }

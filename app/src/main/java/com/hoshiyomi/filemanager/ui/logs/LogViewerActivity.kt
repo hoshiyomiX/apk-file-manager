@@ -47,8 +47,9 @@ class LogViewerActivity : AppCompatActivity() {
             tab.setText(TAB_TITLES[position])
         }.attach()
 
-        // Show entry count in subtitle
-        supportActionBar?.subtitle = "${DiagnosticLogger.getEntries().size} entries"
+        val errorCount = DiagnosticLogger.getErrorCount()
+        val warnCount = DiagnosticLogger.getWarnCount()
+        supportActionBar?.subtitle = "${DiagnosticLogger.getEntries().size} entries · $errorCount errors · $warnCount warnings"
     }
 
     private fun setupMenu() {
@@ -83,12 +84,12 @@ class LogViewerActivity : AppCompatActivity() {
 
     private fun copyFullLog() {
         val logText = DiagnosticLogger.exportAsText()
-        copyToClipboard("APK Diagnostic Log", logText)
+        copyToClipboard("MT File Manager Diagnostic Log", logText)
     }
 
     private fun copyDiagnosticSummary() {
-        val summary = DiagnosticLogger.buildApkDiagnosticSummary()
-        copyToClipboard("APK Analysis Summary", summary)
+        val summary = DiagnosticLogger.buildAppDiagnosticSummary()
+        copyToClipboard("MT File Manager Diagnostic Summary", summary)
     }
 
     private fun copyToClipboard(label: String, text: String) {
@@ -102,7 +103,7 @@ class LogViewerActivity : AppCompatActivity() {
         val logText = DiagnosticLogger.exportAsText()
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "APK Diagnostic Log")
+            putExtra(Intent.EXTRA_SUBJECT, "MT File Manager Diagnostic Log")
             putExtra(Intent.EXTRA_TEXT, logText)
         }
         startActivity(Intent.createChooser(intent, getString(R.string.log_share)))

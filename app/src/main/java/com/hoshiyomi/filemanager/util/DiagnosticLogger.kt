@@ -8,13 +8,19 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Thread-safe in-memory diagnostic logger with structured format.
- * Designed for APK analysis diagnostics — easy to copy/paste for AI-assisted debugging.
+ * Designed for app runtime diagnostics + APK analysis — easy to copy/paste for AI-assisted debugging.
  *
  * Log format (human-readable + parseable):
  * ```
  * [TIMESTAMP] [LEVEL] [TAG] message
  *   key=value
  * ```
+ *
+ * Tag namespaces:
+ *   FM-* = File Manager operations (copy, move, delete, list, etc.)
+ *   APK-* = APK analysis (package, cert, manifest, etc.)
+ *   FM-CRASH = Uncaught exceptions
+ *   FM-SYSTEM = App lifecycle events
  */
 object DiagnosticLogger {
 
@@ -45,10 +51,10 @@ object DiagnosticLogger {
 
     /** Start a new logging session — clears all previous entries */
     @Synchronized
-    fun newSession(sessionLabel: String = "APK Analysis") {
+    fun newSession(sessionLabel: String = "MT File Manager") {
         entries.clear()
         sessionStartTime = System.currentTimeMillis()
-        info("SYSTEM", "Session started: $sessionLabel", mapOf(
+        info("FM-SYSTEM", "Session started: $sessionLabel", mapOf(
             "device" to "${Build.MANUFACTURER} ${Build.MODEL}",
             "android" to "API ${Build.VERSION.SDK_INT} (${Build.VERSION.RELEASE})",
             "app_version" to "1.0.0",
@@ -80,7 +86,7 @@ object DiagnosticLogger {
         details: Map<String, Any> = emptyMap()
     ) {
         val duration = System.currentTimeMillis() - startTimeMs
-        log(Level.INFO, tag, "$message ($duration ms)", details + ("duration_ms" to duration), duration)
+        log(Level.INFO, tag, "$message (${duration}ms)", details + ("duration_ms" to duration), duration)
     }
 
     private fun log(level: Level, tag: String, message: String, details: Map<String, Any>, durationMs: Long? = null) {
@@ -110,6 +116,7 @@ object DiagnosticLogger {
 
     fun getErrorCount(): Int = entries.count { it.level == Level.ERROR }
     fun getWarnCount(): Int = entries.count { it.level == Level.WARN }
+    fun getInfoCount(): Int = entries.count { it.level == Level.INFO }
 
     fun clear() {
         entries.clear()
@@ -122,14 +129,15 @@ object DiagnosticLogger {
     fun exportAsText(): String {
         val sb = StringBuilder()
         sb.appendLine("╔════════════════════════════════════════════════════════════╗")
-        sb.appendLine("║  APK Manager — Diagnostic Log                           ║")
+        sb.appendLine("║  MT File Manager — Diagnostic Log                      ║")
         sb.appendLine("║  ${formatTimestamp(sessionStartTime).padEnd(54)}║")
         sb.appendLine("╚════════════════════════════════════════════════════════════╝")
         sb.appendLine()
 
         val errorCount = getErrorCount()
         val warnCount = getWarnCount()
-        sb.appendLine("Summary: ${entries.size} entries | $errorCount errors | $warnCount warnings | ${entries.size - errorCount - warnCount} info")
+        val infoCount = getInfoCount()
+        sb.appendLine("Summary: ${entries.size} entries | $errorCount errors | $warnCount warnings | $infoCount info")
         sb.appendLine("─".repeat(64))
 
         for (entry in entries) {
@@ -148,6 +156,11 @@ object DiagnosticLogger {
                 for ((key, value) in entry.details) {
                     val displayValue = when (value) {
                         is List<*> -> value.joinToString(", ")
+                        is String -> {
+                            // Truncate very long values (like stack traces)
+                            if (value.length > 500) value.take(500) + "... (${value.length} chars total)"
+                            else value
+                        }
                         else -> value.toString()
                     }
                     sb.appendLine("  ├ $key = $displayValue")
@@ -168,12 +181,12 @@ object DiagnosticLogger {
     /** Export as compact key=value format — ideal for AI chat pasting */
     fun exportAsCompact(): String {
         val sb = StringBuilder()
-        sb.appendLine("--- APK DIAGNOSTIC LOG ---")
+        sb.appendLine("--- MT FILE MANAGER DIAGNOSTIC LOG ---")
 
         // Header
         sb.appendLine("generated=${formatTimestamp(System.currentTimeMillis())}")
         sb.appendLine("device=${Build.MANUFACTURER} ${Build.MODEL}")
-        sb.appendLine("android=API${Build.VERSION.SDK_INT}")
+        sb.appendLine("android=API${Build.VERSION.SDK_INT} (${Build.VERSION.RELEASE})")
         sb.appendLine("total_entries=${entries.size}")
         sb.appendLine("errors=${getErrorCount()}")
         sb.appendLine("warnings=${getWarnCount()}")
@@ -183,7 +196,17 @@ object DiagnosticLogger {
             sb.append("[${entry.level.label}] ${entry.tag}: ${entry.message}")
             if (entry.details.isNotEmpty()) {
                 sb.append(" | ")
-                sb.append(entry.details.entries.joinToString("; ") { "${it.key}=${it.value}" })
+                sb.append(entry.details.entries.joinToString("; ") { (k, v) ->
+                    val valStr = when (v) {
+                        is List<*> -> v.joinToString(",")
+                        is String -> if (v.length > 200) v.take(200) + "..." else v
+                        else -> v.toString()
+                    }
+                    "$k=$valStr"
+                })
+            }
+            if (entry.durationMs != null) {
+                sb.append(" | ${entry.durationMs}ms")
             }
             sb.appendLine()
         }
@@ -191,7 +214,7 @@ object DiagnosticLogger {
         return sb.toString()
     }
 
-    /** Export a structured APK analysis summary — the most useful format for AI diagnosis */
+    /** Export APK analysis summary — the most useful format for APK diagnosis */
     fun buildApkDiagnosticSummary(): String {
         val sb = StringBuilder()
         sb.appendLine("═══ APK ANALYSIS REPORT ═══")
@@ -264,7 +287,111 @@ object DiagnosticLogger {
             }
         }
 
-        // Add any errors/warnings at the end
+        // Errors/warnings summary
+        appendErrorWarningSummary(sb)
+
+        return sb.toString()
+    }
+
+    /** Build an app runtime diagnostic summary — the most useful for AI to diagnose the file manager itself */
+    fun buildAppDiagnosticSummary(): String {
+        val sb = StringBuilder()
+        sb.appendLine("═══ MT FILE MANAGER — APP DIAGNOSTIC REPORT ═══")
+        sb.appendLine()
+
+        // Environment info
+        sb.appendLine("── Environment ──")
+        sb.appendLine("Device: ${Build.MANUFACTURER} ${Build.MODEL}")
+        sb.appendLine("Android: API ${Build.VERSION.SDK_INT} (${Build.VERSION.RELEASE})")
+        sb.appendLine("App Version: 1.0.0")
+        sb.appendLine("Session Start: ${formatTimestamp(sessionStartTime)}")
+        sb.appendLine("Session Uptime: ${formatDuration(System.currentTimeMillis() - sessionStartTime)}")
+        sb.appendLine()
+
+        // File operation stats
+        val fmEntries = entries.filter { it.tag.startsWith("FM-") && it.tag != "FM-SYSTEM" && it.tag != "FM-CRASH" }
+        val opCounts = fmEntries.groupingBy { it.tag }.eachCount()
+        if (opCounts.isNotEmpty()) {
+            sb.appendLine("── File Operations ──")
+            opCounts.forEach { (tag, count) ->
+                val opName = tag.removePrefix("FM-").replace("-", " ").lowercase().replaceFirstChar { it.uppercase() }
+                sb.appendLine("  $opName: $count")
+            }
+            sb.appendLine()
+        }
+
+        // Errors section
+        val errors = entries.filter { it.level == Level.ERROR }
+        if (errors.isNotEmpty()) {
+            sb.appendLine("── Errors (${errors.size}) ──")
+            for (e in errors) {
+                sb.appendLine("[${e.tag}] ${e.message}")
+                e.details.entries.forEach { (k, v) ->
+                    val valStr = when (v) {
+                        is String -> if (v.length > 300) v.take(300) + "..." else v
+                        else -> v.toString()
+                    }
+                    sb.appendLine("  $k = $valStr")
+                }
+                sb.appendLine()
+            }
+        }
+
+        // Warnings section
+        val warnings = entries.filter { it.level == Level.WARN }
+        if (warnings.isNotEmpty()) {
+            sb.appendLine("── Warnings (${warnings.size}) ──")
+            for (w in warnings) {
+                sb.appendLine("[${w.tag}] ${w.message}")
+                w.details.entries.forEach { (k, v) ->
+                    sb.appendLine("  $k = $v")
+                }
+                sb.appendLine()
+            }
+        }
+
+        // Recent operations (last 20)
+        val recent = entries.takeLast(20)
+        if (recent.isNotEmpty()) {
+            sb.appendLine("── Recent Activity (last ${recent.size}) ──")
+            for (r in recent) {
+                val badge = when (r.level) {
+                    Level.ERROR -> "!!"
+                    Level.WARN  -> " !"
+                    Level.DEBUG -> ".."
+                    Level.INFO  -> "  "
+                }
+                sb.appendLine("  $badge [${r.tag}] ${r.message}")
+            }
+            sb.appendLine()
+        }
+
+        // Crash info
+        val crashes = entries.filter { it.tag == "FM-CRASH" }
+        if (crashes.isNotEmpty()) {
+            sb.appendLine("── Crashes (${crashes.size}) ──")
+            for (c in crashes) {
+                sb.appendLine("[CRASH] ${c.message}")
+                c.details["stacktrace"]?.let { st ->
+                    val stStr = st.toString()
+                    // Show first 10 lines of stack trace
+                    stStr.lines().take(10).forEach { line ->
+                        sb.appendLine("  $line")
+                    }
+                    if (stStr.lines().size > 10) {
+                        sb.appendLine("  ... (${stStr.lines().size - 10} more lines)")
+                    }
+                }
+                sb.appendLine()
+            }
+        }
+
+        sb.append("═══ END REPORT ═══")
+
+        return sb.toString()
+    }
+
+    private fun appendErrorWarningSummary(sb: StringBuilder) {
         val errors = entries.filter { it.level == Level.ERROR }
         if (errors.isNotEmpty()) {
             sb.appendLine("═══ ERRORS (${errors.size}) ═══")
@@ -280,8 +407,17 @@ object DiagnosticLogger {
                 sb.appendLine("[${w.tag}] ${w.message}")
             }
         }
+    }
 
-        return sb.toString()
+    private fun formatDuration(ms: Long): String {
+        val seconds = ms / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        return when {
+            hours > 0 -> "${hours}h ${minutes % 60}m ${seconds % 60}s"
+            minutes > 0 -> "${minutes}m ${seconds % 60}s"
+            else -> "${seconds}s"
+        }
     }
 
     private fun formatTimestamp(millis: Long): String {

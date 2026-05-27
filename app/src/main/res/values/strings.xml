@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App -->
-    <string name="app_name">APK Manager</string>
+    <string name="app_name">MT File Manager</string>
 
     <!-- Navigation -->
     <string name="nav_files">Files</string>
     <string name="nav_tools">Tools</string>
-    <string name="nav_apk_viewer">APK Viewer</string>
+    <string name="nav_apk_viewer">APK Tools</string>
 
     <!-- File Operations -->
     <string name="action_copy">Copy</string>
@@ -196,7 +196,7 @@
 
     <!-- About -->
     <string name="about_version">Version %1$s</string>
-    <string name="about_description">A powerful native Android file manager and APK analyzer.</string>
+    <string name="about_description">A powerful native Android file manager with APK analysis tools.</string>
     <string name="about_github">GitHub</string>
     <string name="about_license">License</string>
 
@@ -230,5 +230,5 @@
     <string name="log_clear_message">Are you sure you want to clear all diagnostic logs? This action cannot be undone.</string>
     <string name="log_cleared">Logs cleared</string>
     <string name="log_copied">%1$s copied to clipboard</string>
-    <string name="log_empty">No diagnostic logs available. Open an APK file to generate logs.</string>
+    <string name="log_empty">No diagnostic logs yet. Use the file manager to generate logs.</string>
 </resources>

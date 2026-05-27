@@ -3,6 +3,7 @@ package com.hoshiyomi.filemanager.core.file
 import com.hoshiyomi.filemanager.model.FileItem
 import com.hoshiyomi.filemanager.model.SortMode
 import com.hoshiyomi.filemanager.model.SortOrder
+import com.hoshiyomi.filemanager.util.DiagnosticLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -20,11 +21,23 @@ object FileOperations {
         sortOrder: SortOrder
     ): List<FileItem> = withContext(Dispatchers.IO) {
         if (!directory.exists() || !directory.isDirectory) {
+            DiagnosticLogger.warn("FM-LIST", "Cannot list directory", mapOf(
+                "path" to directory.absolutePath,
+                "exists" to directory.exists(),
+                "is_directory" to directory.isDirectory
+            ))
             return@withContext emptyList()
         }
 
         val files = directory.listFiles()
-            ?: return@withContext emptyList()
+        if (files == null) {
+            DiagnosticLogger.error("FM-LIST", "listFiles() returned null", mapOf(
+                "path" to directory.absolutePath,
+                "can_read" to directory.canRead(),
+                "can_write" to directory.canWrite()
+            ))
+            return@withContext emptyList()
+        }
 
         files
             .filter { showHidden || !it.isHidden }
@@ -44,6 +57,7 @@ object FileOperations {
 
     suspend fun createDirectory(parent: File, name: String): Result<File> =
         withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
             runCatching {
                 if (name.isBlank()) {
                     throw IllegalArgumentException("Name cannot be empty")
@@ -55,12 +69,22 @@ object FileOperations {
                 if (!dir.mkdirs()) {
                     throw RuntimeException("Failed to create directory: ${dir.absolutePath}")
                 }
+                DiagnosticLogger.timed("FM-CREATE", "Created directory: ${dir.name}", start, mapOf(
+                    "path" to dir.absolutePath,
+                    "parent" to parent.absolutePath
+                ))
                 dir
+            }.onFailure { e ->
+                DiagnosticLogger.error("FM-CREATE", "Failed to create directory: $name", mapOf(
+                    "parent" to parent.absolutePath,
+                    "error" to e.message ?: "unknown"
+                ))
             }
         }
 
     suspend fun createFile(parent: File, name: String): Result<File> =
         withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
             runCatching {
                 if (name.isBlank()) {
                     throw IllegalArgumentException("Name cannot be empty")
@@ -72,12 +96,22 @@ object FileOperations {
                 if (!file.createNewFile()) {
                     throw RuntimeException("Failed to create file: ${file.absolutePath}")
                 }
+                DiagnosticLogger.timed("FM-CREATE", "Created file: ${file.name}", start, mapOf(
+                    "path" to file.absolutePath,
+                    "parent" to parent.absolutePath
+                ))
                 file
+            }.onFailure { e ->
+                DiagnosticLogger.error("FM-CREATE", "Failed to create file: $name", mapOf(
+                    "parent" to parent.absolutePath,
+                    "error" to e.message ?: "unknown"
+                ))
             }
         }
 
     suspend fun copyFile(source: File, destination: File): Result<File> =
         withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
             runCatching {
                 if (!source.exists()) {
                     throw FileNotFoundException("Source not found: ${source.absolutePath}")
@@ -92,7 +126,18 @@ object FileOperations {
                         }
                     }
                 }
+                DiagnosticLogger.timed("FM-COPY", "Copied: ${source.name}", start, mapOf(
+                    "source" to source.absolutePath,
+                    "destination" to destination.absolutePath,
+                    "size" to source.length()
+                ))
                 destination
+            }.onFailure { e ->
+                DiagnosticLogger.error("FM-COPY", "Copy failed: ${source.name}", mapOf(
+                    "source" to source.absolutePath,
+                    "destination" to destination.absolutePath,
+                    "error" to e.message ?: "unknown"
+                ))
             }
         }
 
@@ -116,6 +161,7 @@ object FileOperations {
 
     suspend fun moveFile(source: File, destination: File): Result<File> =
         withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
             runCatching {
                 if (!source.exists()) {
                     throw FileNotFoundException("Source not found: ${source.absolutePath}")
@@ -124,7 +170,17 @@ object FileOperations {
                     copyDirectoryRecursive(source, destination)
                     deleteFileInternal(source)
                 }
+                DiagnosticLogger.timed("FM-MOVE", "Moved: ${source.name}", start, mapOf(
+                    "source" to source.absolutePath,
+                    "destination" to destination.absolutePath
+                ))
                 destination
+            }.onFailure { e ->
+                DiagnosticLogger.error("FM-MOVE", "Move failed: ${source.name}", mapOf(
+                    "source" to source.absolutePath,
+                    "destination" to destination.absolutePath,
+                    "error" to e.message ?: "unknown"
+                ))
             }
         }
 
@@ -166,17 +222,37 @@ object FileOperations {
                 if (!file.renameTo(newFile)) {
                     throw RuntimeException("Failed to rename ${file.name} to $newName")
                 }
+                DiagnosticLogger.info("FM-RENAME", "Renamed: ${file.name} -> $newName", mapOf(
+                    "path" to file.absolutePath,
+                    "new_path" to newFile.absolutePath
+                ))
                 newFile
+            }.onFailure { e ->
+                DiagnosticLogger.error("FM-RENAME", "Rename failed: ${file.name}", mapOf(
+                    "path" to file.absolutePath,
+                    "new_name" to newName,
+                    "error" to e.message ?: "unknown"
+                ))
             }
         }
 
     suspend fun deleteFile(file: File): Result<Unit> =
         withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
             runCatching {
                 if (!file.exists()) {
                     throw FileNotFoundException("File not found: ${file.absolutePath}")
                 }
                 deleteFileInternal(file)
+                DiagnosticLogger.timed("FM-DELETE", "Deleted: ${file.name}", start, mapOf(
+                    "path" to file.absolutePath,
+                    "type" to if (file.isDirectory) "directory" else "file"
+                ))
+            }.onFailure { e ->
+                DiagnosticLogger.error("FM-DELETE", "Delete failed: ${file.name}", mapOf(
+                    "path" to file.absolutePath,
+                    "error" to e.message ?: "unknown"
+                ))
             }
         }
 
@@ -204,9 +280,14 @@ object FileOperations {
 
     suspend fun searchFiles(directory: File, query: String): List<FileItem> =
         withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
             val results = mutableListOf<FileItem>()
             val lowerQuery = query.lowercase()
             searchRecursive(directory, lowerQuery, results)
+            DiagnosticLogger.timed("FM-SEARCH", "Searched: '$query'", start, mapOf(
+                "root" to directory.absolutePath,
+                "results" to results.size
+            ))
             results
         }
 

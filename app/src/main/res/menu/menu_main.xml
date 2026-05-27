@@ -10,6 +10,12 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
     <item
+        android:id="@+id/action_logs"
+        android:icon="@drawable/ic_logs"
+        android:title="@string/log_title"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_bookmarks"
         android:icon="@drawable/ic_bookmark"
         android:title="@string/bookmarks"

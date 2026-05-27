@@ -3,38 +3,52 @@ package com.hoshiyomi.filemanager.util
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 
+enum class ThemeMode(val value: Int) {
+    SYSTEM(-1),
+    LIGHT(AppCompatDelegate.MODE_NIGHT_NO),
+    DARK(AppCompatDelegate.MODE_NIGHT_YES);
+
+    companion object {
+        fun fromValue(value: Int): ThemeMode {
+            return values().firstOrNull { it.value == value } ?: SYSTEM
+        }
+    }
+}
+
 object ThemeManager {
 
     private const val PREFS_NAME = "theme_prefs"
-    private const val KEY_DARK_MODE = "dark_mode"
+    private const val KEY_THEME_MODE = "theme_mode"
 
-    fun applyTheme(context: Context, darkMode: Boolean) {
-        val mode = if (darkMode) {
-            AppCompatDelegate.MODE_NIGHT_YES
-        } else {
-            AppCompatDelegate.MODE_NIGHT_NO
-        }
-        AppCompatDelegate.setDefaultNightMode(mode)
-        saveDarkMode(context, darkMode)
+    fun applyTheme(context: Context, mode: ThemeMode) {
+        AppCompatDelegate.setDefaultNightMode(mode.value)
+        saveThemeMode(context, mode)
+    }
+
+    fun getThemeMode(context: Context): ThemeMode {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val savedValue = prefs.getInt(KEY_THEME_MODE, -1)
+        return ThemeMode.fromValue(savedValue)
     }
 
     fun isDarkMode(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getBoolean(KEY_DARK_MODE, false)
-    }
-
-    fun toggleTheme(context: Context) {
-        val currentDark = isDarkMode(context)
-        applyTheme(context, !currentDark)
-    }
-
-    private fun saveDarkMode(context: Context, darkMode: Boolean) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(KEY_DARK_MODE, darkMode).apply()
+        return when (getThemeMode(context)) {
+            ThemeMode.DARK -> true
+            ThemeMode.LIGHT -> false
+            ThemeMode.SYSTEM -> {
+                val currentNightMode = AppCompatDelegate.getDefaultNightMode()
+                currentNightMode == AppCompatDelegate.MODE_NIGHT_YES
+            }
+        }
     }
 
     fun initTheme(context: Context) {
-        val darkMode = isDarkMode(context)
-        applyTheme(context, darkMode)
+        val mode = getThemeMode(context)
+        applyTheme(context, mode)
+    }
+
+    private fun saveThemeMode(context: Context, mode: ThemeMode) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putInt(KEY_THEME_MODE, mode.value).apply()
     }
 }

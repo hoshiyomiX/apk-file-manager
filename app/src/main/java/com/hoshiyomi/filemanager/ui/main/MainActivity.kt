@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -24,9 +25,12 @@ import com.hoshiyomi.filemanager.R
 import com.hoshiyomi.filemanager.databinding.ActivityMainBinding
 import com.hoshiyomi.filemanager.ui.apkviewer.ApkViewerActivity
 import com.hoshiyomi.filemanager.ui.filemanager.FileManagerFragment
+import com.hoshiyomi.filemanager.ui.filemanager.HistoryFragment
 import com.hoshiyomi.filemanager.ui.logs.LogViewerActivity
 import com.hoshiyomi.filemanager.ui.settings.SettingsActivity
 import com.hoshiyomi.filemanager.util.FileUtils
+import com.hoshiyomi.filemanager.util.ThemeManager
+import com.hoshiyomi.filemanager.util.ThemeMode
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -73,12 +77,28 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(drawerView: android.view.View, slideOffset: Float) {}
-            override fun onDrawerOpened(drawerView: android.view.View) {}
-            override fun onDrawerClosed(drawerView: android.view.View) {}
-            override fun onDrawerStateChanged(newState: Int) {}
-        })
+        setupThemeSelector()
+    }
+
+    private fun setupThemeSelector() {
+        val headerView = binding.navigationView.getHeaderView(0)
+        val radioGroup = headerView.findViewById<RadioGroup>(R.id.radioGroupTheme)
+        val currentMode = ThemeManager.getThemeMode(this)
+
+        when (currentMode) {
+            ThemeMode.SYSTEM -> radioGroup.check(R.id.radioThemeSystem)
+            ThemeMode.LIGHT -> radioGroup.check(R.id.radioThemeLight)
+            ThemeMode.DARK -> radioGroup.check(R.id.radioThemeDark)
+        }
+
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val mode = when (checkedId) {
+                R.id.radioThemeLight -> ThemeMode.LIGHT
+                R.id.radioThemeDark -> ThemeMode.DARK
+                else -> ThemeMode.SYSTEM
+            }
+            ThemeManager.applyTheme(this, mode)
+        }
     }
 
     private fun handleDrawerItemClick(item: MenuItem) {
@@ -133,12 +153,12 @@ class MainActivity : AppCompatActivity() {
                     loadFileManagerFragment()
                     true
                 }
-                R.id.nav_tools -> {
-                    Toast.makeText(this, "Tools coming soon", Toast.LENGTH_SHORT).show()
-                    false
+                R.id.nav_history -> {
+                    loadHistoryFragment()
+                    true
                 }
-                R.id.nav_apk_viewer -> {
-                    Toast.makeText(this, "Open an APK file to view", Toast.LENGTH_SHORT).show()
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
                     false
                 }
                 else -> false
@@ -152,10 +172,16 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.menu.findItem(R.id.nav_files)?.isChecked = true
     }
 
+    private fun loadHistoryFragment() {
+        val fragment = HistoryFragment()
+        replaceFragment(fragment, "history")
+        binding.bottomNavigation.menu.findItem(R.id.nav_history)?.isChecked = true
+    }
+
     private fun replaceFragment(fragment: Fragment, tag: String) {
         val transaction = supportFragmentManager.beginTransaction()
         currentFragment?.let {
-            if (it is FileManagerFragment && tag != "file_manager") {
+            if (tag != "file_manager" && tag != "history") {
                 transaction.remove(it)
             }
         }
@@ -273,7 +299,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle drawer toggle first
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             return true

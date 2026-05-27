@@ -5,6 +5,7 @@
 
     <!-- Navigation -->
     <string name="nav_files">Files</string>
+    <string name="nav_history">History</string>
     <string name="nav_tools">Tools</string>
     <string name="nav_apk_viewer">APK Tools</string>
 
@@ -12,6 +13,8 @@
     <string name="action_copy">Copy</string>
     <string name="action_cut">Cut</string>
     <string name="action_paste">Paste</string>
+    <string name="action_paste_here">Paste Here</string>
+    <string name="action_move_to_panel">Move to %1$s Panel</string>
     <string name="action_rename">Rename</string>
     <string name="action_delete">Delete</string>
     <string name="action_properties">Properties</string>
@@ -227,6 +230,13 @@
     <string name="drawer_apk_tools">APK Tools</string>
     <string name="drawer_open_drawer">Open navigation drawer</string>
     <string name="drawer_close_drawer">Close navigation drawer</string>
+    <string name="drawer_theme_label">Theme</string>
+    <string name="drawer_theme_system">System</string>
+    <string name="drawer_theme_light">Light</string>
+    <string name="drawer_theme_dark">Dark</string>
+    <string name="context_to_right">Right</string>
+    <string name="context_to_left">Left</string>
+    <string name="moved_to_panel">Moved to other panel</string>
 
     <!-- Logs / Diagnostics -->
     <string name="log_title">Logs</string>
@@ -243,4 +253,15 @@
     <string name="log_cleared">Logs cleared</string>
     <string name="log_copied">%1$s copied to clipboard</string>
     <string name="log_empty">No diagnostic logs yet. Use the file manager to generate logs.</string>
+
+    <!-- History -->
+    <string name="history_empty">No navigation history yet</string>
+    <string name="history_clear">Clear History</string>
+    <string name="history_clear_title">Clear History</string>
+    <string name="history_clear_message">Are you sure you want to clear all navigation history?</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="history_path_not_found">Path not found or not accessible</string>
+    <string name="history_path_copied">Path copied to clipboard</string>
+    <string name="history_remove">Remove from History</string>
+    <string name="history_open">Open</string>
 </resources>

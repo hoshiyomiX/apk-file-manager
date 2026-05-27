@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/drawerIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:src="@drawable/ic_launcher_foreground"
         android:contentDescription="@string/app_name" />
 
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="@string/app_name"
         android:textColor="@color/md_theme_on_primary"
-        android:textSize="16sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/spacing_sm" />
 
@@ -31,7 +31,58 @@
         android:layout_height="wrap_content"
         android:text="@string/drawer_subtitle"
         android:textColor="@color/md_theme_primary_container"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:layout_marginTop="2dp" />
+
+    <!-- Theme Selector -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/drawer_theme_label"
+        android:textColor="@color/md_theme_on_primary"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:alpha="0.8" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="2dp">
+
+        <RadioButton
+            android:id="@+id/radioThemeSystem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/drawer_theme_system"
+            android:textColor="@color/md_theme_on_primary"
+            android:textSize="12sp"
+            android:buttonTint="@color/md_theme_on_primary"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/radioThemeLight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/drawer_theme_light"
+            android:textColor="@color/md_theme_on_primary"
+            android:textSize="12sp"
+            android:buttonTint="@color/md_theme_on_primary" />
+
+        <RadioButton
+            android:id="@+id/radioThemeDark"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/drawer_theme_dark"
+            android:textColor="@color/md_theme_on_primary"
+            android:textSize="12sp"
+            android:buttonTint="@color/md_theme_on_primary" />
+
+    </RadioGroup>
 
 </LinearLayout>

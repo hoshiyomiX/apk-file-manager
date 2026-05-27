@@ -332,6 +332,7 @@ class FileManagerFragment : Fragment() {
         getAdapter(isLeft).clearSelection()
         getAdapter(isLeft).setMultiSelectMode(false)
         loadFilesForPanel(isLeft)
+        viewModel.addToHistory(file.absolutePath)
     }
 
     private fun navigateUp(isLeft: Boolean) {
@@ -398,6 +399,7 @@ class FileManagerFragment : Fragment() {
     private fun showContextMenu(fileItem: FileItem, isLeft: Boolean) {
         contextMenuPanelIsLeft = isLeft
         contextMenuFileItem = fileItem
+        val otherPanelLabel = if (isLeft) getString(R.string.context_to_right) else getString(R.string.context_to_left)
 
         val menuItems = mutableListOf<String>()
         menuItems.add(getString(R.string.action_open))
@@ -406,11 +408,14 @@ class FileManagerFragment : Fragment() {
         }
         menuItems.add(getString(R.string.action_copy))
         menuItems.add(getString(R.string.action_cut))
+        menuItems.add(getString(R.string.action_move_to_panel, otherPanelLabel))
+        if (viewModel.hasClipboard()) {
+            menuItems.add(getString(R.string.action_paste_here))
+        }
         menuItems.add(getString(R.string.action_rename))
         menuItems.add(getString(R.string.action_delete))
         menuItems.add(getString(R.string.action_bookmark))
         menuItems.add(getString(R.string.action_properties))
-
         if (fileItem.isArchive) {
             menuItems.add(getString(R.string.action_extract))
         }
@@ -440,6 +445,19 @@ class FileManagerFragment : Fragment() {
                         viewModel.cutFilesToClipboard(listOf(fileItem.file))
                         Toast.makeText(context, getString(R.string.cut, 1), Toast.LENGTH_SHORT).show()
                     }
+                    menuItems[which] == getString(R.string.action_move_to_panel, otherPanelLabel) -> {
+                        moveFileToOtherPanel(fileItem)
+                    }
+                    menuItems[which] == getString(R.string.action_paste_here) -> {
+                        val destDir = if (isLeft) leftCurrentPath else rightCurrentPath
+                        viewModel.pasteFiles(destDir, isLeft) { result ->
+                            result.onSuccess {
+                                Toast.makeText(context, getString(R.string.pasted, 1), Toast.LENGTH_SHORT).show()
+                            }.onFailure { e ->
+                                Toast.makeText(context, e.message ?: "Failed to paste", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                     menuItems[which] == getString(R.string.action_rename) -> {
                         showRenameDialog(fileItem)
                     }
@@ -458,6 +476,20 @@ class FileManagerFragment : Fragment() {
                 }
             }
             .show()
+    }
+
+    private fun moveFileToOtherPanel(fileItem: FileItem) {
+        val isLeft = contextMenuPanelIsLeft
+        val destDir = if (isLeft) rightCurrentPath else leftCurrentPath
+        val destPanel = !isLeft
+        val files = listOf(fileItem.file)
+        viewModel.pasteFiles(destDir, destPanel) { result ->
+            result.onSuccess {
+                Toast.makeText(context, getString(R.string.moved_to_panel), Toast.LENGTH_SHORT).show()
+            }.onFailure { e ->
+                Toast.makeText(context, e.message ?: "Failed to move", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun showNewFolderDialog() {
@@ -673,7 +705,7 @@ class FileManagerFragment : Fragment() {
 
     private fun showPanelMoreOptions(isLeft: Boolean) {
         leftPanelActive = isLeft
-        val options = arrayOf(
+        val options = mutableListOf(
             getString(R.string.action_new_folder),
             getString(R.string.action_new_file),
             getString(R.string.action_bookmark),
@@ -681,10 +713,13 @@ class FileManagerFragment : Fragment() {
             getString(R.string.sort_name),
             getString(R.string.bookmarks)
         )
+        if (viewModel.hasClipboard()) {
+            options.add(getString(R.string.action_paste))
+        }
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.more_options)
-            .setItems(options) { _, which ->
+            .setItems(options.toTypedArray()) { _, which ->
                 when (options[which]) {
                     getString(R.string.action_new_folder) -> {
                         leftPanelActive = isLeft
@@ -704,6 +739,10 @@ class FileManagerFragment : Fragment() {
                     }
                     getString(R.string.sort_name) -> showSortDialog()
                     getString(R.string.bookmarks) -> doShowBookmarksDialog()
+                    getString(R.string.action_paste) -> {
+                        leftPanelActive = isLeft
+                        pasteFiles()
+                    }
                 }
             }
             .show()

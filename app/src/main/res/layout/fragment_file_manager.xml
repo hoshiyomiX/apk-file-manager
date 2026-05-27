@@ -30,11 +30,12 @@
 
             <ImageButton
                 android:id="@+id/btnLeftUp"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_arrow_up"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/up"
+                android:padding="2dp"
                 app:tint="@color/md_theme_on_surface" />
 
             <HorizontalScrollView
@@ -58,20 +59,22 @@
 
             <ImageButton
                 android:id="@+id/btnLeftRefresh"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_rotate"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_refresh"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/refresh"
+                android:padding="2dp"
                 app:tint="@color/md_theme_on_surface" />
 
             <ImageButton
                 android:id="@+id/btnLeftMore"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_more_vert"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/more_options"
+                android:padding="2dp"
                 app:tint="@color/md_theme_on_surface" />
 
         </LinearLayout>
@@ -140,11 +143,12 @@
 
             <ImageButton
                 android:id="@+id/btnRightUp"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_arrow_up"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/up"
+                android:padding="2dp"
                 app:tint="@color/md_theme_on_surface" />
 
             <HorizontalScrollView
@@ -168,20 +172,22 @@
 
             <ImageButton
                 android:id="@+id/btnRightRefresh"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_rotate"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_refresh"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/refresh"
+                android:padding="2dp"
                 app:tint="@color/md_theme_on_surface" />
 
             <ImageButton
                 android:id="@+id/btnRightMore"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_more_vert"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/more_options"
+                android:padding="2dp"
                 app:tint="@color/md_theme_on_surface" />
 
         </LinearLayout>

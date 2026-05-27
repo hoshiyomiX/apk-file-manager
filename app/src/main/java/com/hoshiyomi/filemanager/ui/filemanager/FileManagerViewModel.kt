@@ -11,6 +11,9 @@ import com.hoshiyomi.filemanager.model.FileItem
 import com.hoshiyomi.filemanager.model.SortMode
 import com.hoshiyomi.filemanager.model.SortOrder
 import com.hoshiyomi.filemanager.util.BookmarkManager
+import com.hoshiyomi.filemanager.ui.filemanager.HistoryEntry
+import org.json.JSONArray
+import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -211,6 +214,45 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
         return BookmarkManager.isBookmarked(path)
     }
 
+    // ---- Navigation History ----
+
+    private val MAX_HISTORY = 200
+    private val KEY_NAV_HISTORY = "nav_history"
+
+    fun addToHistory(path: String) {
+        val history = loadHistoryRaw()
+        val filtered = history.filter { it != path }
+        val updated = listOf(path) + filtered
+        val trimmed = if (updated.size > MAX_HISTORY) updated.take(MAX_HISTORY) else updated
+        prefs.edit().putString(KEY_NAV_HISTORY, JSONArray(trimmed).toString()).apply()
+    }
+
+    fun getNavigationHistory(): List<HistoryEntry> {
+        val paths = loadHistoryRaw()
+        return paths.mapIndexedNotNull { index, path ->
+            try {
+                HistoryEntry(path = path)
+            } catch (_: Exception) { null }
+        }.reversed()
+    }
+
+    fun clearHistory() {
+        prefs.edit().remove(KEY_NAV_HISTORY).apply()
+    }
+
+    fun removeHistoryEntry(path: String) {
+        val history = loadHistoryRaw().filter { it != path }
+        prefs.edit().putString(KEY_NAV_HISTORY, JSONArray(history).toString()).apply()
+    }
+
+    private fun loadHistoryRaw(): List<String> {
+        val raw = prefs.getString(KEY_NAV_HISTORY, null) ?: return emptyList()
+        return try {
+            val arr = JSONArray(raw)
+            (0 until arr.length()).map { arr.getString(it) }
+        } catch (_: Exception) { emptyList() }
+    }
+
     private fun loadBooleanPref(key: String, default: Boolean): Boolean {
         return prefs.getBoolean(key, default)
     }
@@ -231,5 +273,9 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
         private const val KEY_SHOW_HIDDEN = "show_hidden"
         private const val KEY_SORT_MODE = "sort_mode"
         private const val KEY_SORT_ORDER = "sort_order"
+    }
+
+    init {
+        // Ensure Gson is available (already in dependencies)
     }
 }

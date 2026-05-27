@@ -21,7 +21,6 @@ on:
 env:
   JAVA_DISTRIBUTION: temurin
   JAVA_VERSION: 17
-  GRADLE_VERSION: 8.5
 
 jobs:
   build:
@@ -37,11 +36,15 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
         with:
-          validate-wrappers: false
-          gradle-version: ${{ env.GRADLE_VERSION }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       # ── Auto Sign: Decode keystore from GitHub Secrets ──
       - name: Decode keystore

@@ -71,27 +71,30 @@ jobs:
           sed -i "s/versionName = \".*\"/versionName = \"$VERSION_NAME\"/" app/build.gradle.kts
           echo "📌 Version bumped to $VERSION_NAME ($VERSION_CODE)"
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       # ── Build signed debug APK ──
       - name: Build debug APK (signed)
         run: |
           if [ -f app/release.jks ]; then
             export SIGNING_KEYSTORE_PATH=release.jks
-            export SIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}
-            export SIGNING_KEY_ALIAS=${{ secrets.SIGNING_KEY_ALIAS }}
-            export SIGNING_KEY_PASSWORD=${{ secrets.SIGNING_KEY_PASSWORD }}
+            export SIGNING_STORE_PASSWORD="${{ secrets.SIGNING_STORE_PASSWORD }}"
+            export SIGNING_KEY_ALIAS="${{ secrets.SIGNING_KEY_ALIAS }}"
+            export SIGNING_KEY_PASSWORD="${{ secrets.SIGNING_KEY_PASSWORD }}"
           fi
-          cd app && ../gradlew assembleDebug --no-daemon --stacktrace && cd ..
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace
 
       # ── Build signed release APK ──
       - name: Build release APK (signed)
         run: |
           if [ -f app/release.jks ]; then
             export SIGNING_KEYSTORE_PATH=release.jks
-            export SIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}
-            export SIGNING_KEY_ALIAS=${{ secrets.SIGNING_KEY_ALIAS }}
-            export SIGNING_KEY_PASSWORD=${{ secrets.SIGNING_KEY_PASSWORD }}
+            export SIGNING_STORE_PASSWORD="${{ secrets.SIGNING_STORE_PASSWORD }}"
+            export SIGNING_KEY_ALIAS="${{ secrets.SIGNING_KEY_ALIAS }}"
+            export SIGNING_KEY_PASSWORD="${{ secrets.SIGNING_KEY_PASSWORD }}"
           fi
-          cd app && ../gradlew assembleRelease --no-daemon --stacktrace && cd ..
+          ./gradlew :app:assembleRelease --no-daemon --stacktrace
 
       # ── Verify APK signatures ──
       - name: Verify APK signatures

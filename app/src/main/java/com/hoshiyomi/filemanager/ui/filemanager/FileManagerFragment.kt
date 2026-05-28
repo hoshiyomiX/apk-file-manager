@@ -242,17 +242,21 @@ class FileManagerFragment : Fragment() {
         setupUnifiedPathBar()
 
         // Intercept touch on RecyclerViews to switch active panel on first touch (ACTION_DOWN)
-        val panelTouchListener = RecyclerView.OnItemTouchListener { rv, e ->
-            if (e.action == MotionEvent.ACTION_DOWN) {
-                val isLeft = (rv.id == R.id.rvLeftFiles)
-                if (isLeft != leftPanelActive) {
-                    leftPanelActive = isLeft
-                    updateSelectionCount()
-                    updateUnifiedPathBar()
-                    updateActivePanelHighlight()
+        val panelTouchListener = object : RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                if (e.action == MotionEvent.ACTION_DOWN) {
+                    val isLeft = (rv.id == R.id.rvLeftFiles)
+                    if (isLeft != leftPanelActive) {
+                        leftPanelActive = isLeft
+                        updateSelectionCount()
+                        updateUnifiedPathBar()
+                        updateActivePanelHighlight()
+                    }
                 }
+                return false // do not consume the event
             }
-            false // do not consume the event
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+            override fun onRequestDisallowInterceptTouchEvent(rv: RecyclerView, disallow: Boolean) {}
         }
         binding.rvLeftFiles.addOnItemTouchListener(panelTouchListener)
         binding.rvRightFiles.addOnItemTouchListener(panelTouchListener)

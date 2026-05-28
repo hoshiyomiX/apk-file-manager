@@ -12,22 +12,22 @@
     <LinearLayout
         android:id="@+id/unifiedPathBar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
+        android:layout_height="44dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@color/md_theme_surface"
-        android:paddingStart="@dimen/spacing_sm"
-        android:paddingEnd="@dimen/spacing_sm"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp"
         android:elevation="2dp">
 
         <ImageButton
             android:id="@+id/btnUnifiedUp"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_arrow_up"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/up"
-            android:padding="2dp"
+            android:padding="6dp"
             app:tint="@color/md_theme_on_surface" />
 
         <HorizontalScrollView
@@ -35,8 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scrollbars="none"
-            android:layout_marginStart="@dimen/spacing_sm"
-            android:layout_marginEnd="@dimen/spacing_sm">
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tvUnifiedPath"
@@ -45,29 +46,29 @@
                 android:maxLines="1"
                 android:ellipsize="middle"
                 android:textColor="@color/md_theme_on_surface"
-                android:textSize="14sp"
-                android:paddingVertical="4dp" />
+                android:textSize="13sp"
+                android:paddingVertical="2dp" />
 
         </HorizontalScrollView>
 
         <ImageButton
             android:id="@+id/btnUnifiedRefresh"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_refresh"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/refresh"
-            android:padding="2dp"
+            android:padding="6dp"
             app:tint="@color/md_theme_on_surface" />
 
         <ImageButton
             android:id="@+id/btnUnifiedMore"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_more_vert"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/more_options"
-            android:padding="2dp"
+            android:padding="6dp"
             app:tint="@color/md_theme_on_surface" />
 
     </LinearLayout>

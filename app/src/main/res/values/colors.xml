@@ -35,8 +35,8 @@
     <color name="text_icon_color">#8D6E63</color>
     <color name="archive_icon_color">#8D6E63</color>
 
-    <!-- Active panel highlight -->
-    <color name="panel_active_bg">#E8F5E9</color>
+    <!-- Active panel highlight (accent primary at 90% opacity) -->
+    <color name="panel_active_bg">#E61B6B52</color>
 
     <!-- Selection -->
     <color name="selection_background">#1B6B5220</color>

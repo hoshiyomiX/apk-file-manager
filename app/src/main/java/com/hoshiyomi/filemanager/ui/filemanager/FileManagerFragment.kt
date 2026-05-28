@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -20,6 +21,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hoshiyomi.filemanager.R
 import com.hoshiyomi.filemanager.core.archive.ArchiveManager
@@ -239,37 +241,21 @@ class FileManagerFragment : Fragment() {
         // Unified path bar handles up, refresh, more
         setupUnifiedPathBar()
 
-        // Tap on RecyclerView to switch active panel
-        binding.rvLeftFiles.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            leftPanelActive = true
-            updateSelectionCount()
-            updateUnifiedPathBar()
-            updateActivePanelHighlight()
-        }
-        binding.rvRightFiles.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            leftPanelActive = false
-            updateSelectionCount()
-            updateUnifiedPathBar()
-            updateActivePanelHighlight()
-        }
-
-        // Touch on SwipeRefreshLayout to switch active panel
-        binding.swipeLeftRefresh.setOnTouchListener { _, _ ->
-            if (!leftPanelActive) {
-                leftPanelActive = true
-                updateUnifiedPathBar()
-                updateActivePanelHighlight()
+        // Intercept touch on RecyclerViews to switch active panel on first touch (ACTION_DOWN)
+        val panelTouchListener = RecyclerView.OnItemTouchListener { rv, e ->
+            if (e.action == MotionEvent.ACTION_DOWN) {
+                val isLeft = (rv.id == R.id.rvLeftFiles)
+                if (isLeft != leftPanelActive) {
+                    leftPanelActive = isLeft
+                    updateSelectionCount()
+                    updateUnifiedPathBar()
+                    updateActivePanelHighlight()
+                }
             }
-            false
+            false // do not consume the event
         }
-        binding.swipeRightRefresh.setOnTouchListener { _, _ ->
-            if (leftPanelActive) {
-                leftPanelActive = false
-                updateUnifiedPathBar()
-                updateActivePanelHighlight()
-            }
-            false
-        }
+        binding.rvLeftFiles.addOnItemTouchListener(panelTouchListener)
+        binding.rvRightFiles.addOnItemTouchListener(panelTouchListener)
     }
 
     private fun observeViewModel() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Active panel highlight (dark theme) -->
-    <color name="panel_active_bg">#1B3A20</color>
+    <!-- Active panel highlight (accent primary at 20% opacity for dark theme) -->
+    <color name="panel_active_bg">#331B6B52</color>
     <color name="md_theme_background">#121212</color>
     <color name="md_theme_surface">#1E1E1E</color>
     <color name="md_theme_on_surface">#E0E0E0</color>

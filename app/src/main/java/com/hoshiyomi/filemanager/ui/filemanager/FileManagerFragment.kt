@@ -256,7 +256,7 @@ class FileManagerFragment : Fragment() {
                 return false // do not consume the event
             }
             override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-            override fun onRequestDisallowInterceptTouchEvent(rv: RecyclerView, disallow: Boolean) {}
+            override fun onRequestDisallowInterceptTouchEvent(disallow: Boolean) {}
         }
         binding.rvLeftFiles.addOnItemTouchListener(panelTouchListener)
         binding.rvRightFiles.addOnItemTouchListener(panelTouchListener)

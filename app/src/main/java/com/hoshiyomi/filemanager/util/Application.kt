@@ -17,7 +17,7 @@ class Application : Application() {
     }
 
     private fun initDiagnosticLogging() {
-        DiagnosticLogger.newSession("MT File Manager started")
+        DiagnosticLogger.newSession("XD Manager started")
         DiagnosticLogger.info("FM-SYSTEM", "App initialized", mapOf(
             "device" to "${Build.MANUFACTURER} ${Build.MODEL}",
             "android" to "API ${Build.VERSION.SDK_INT} (${Build.VERSION.RELEASE})",
@@ -50,7 +50,7 @@ class Application : Application() {
 ═══ CRASH REPORT ═══
 Device: ${Build.MANUFACTURER} ${Build.MODEL}
 Android: API ${Build.VERSION.SDK_INT} (${Build.VERSION.RELEASE})
-App: MT File Manager v1.0.0
+App: XD Manager v1.0.0
 Thread: ${Thread.currentThread().name}
 Exception: ${throwable.javaClass.simpleName}: ${throwable.message}
 

@@ -51,7 +51,7 @@ object DiagnosticLogger {
 
     /** Start a new logging session — clears all previous entries */
     @Synchronized
-    fun newSession(sessionLabel: String = "MT File Manager") {
+    fun newSession(sessionLabel: String = "XD Manager") {
         entries.clear()
         sessionStartTime = System.currentTimeMillis()
         info("FM-SYSTEM", "Session started: $sessionLabel", mapOf(
@@ -129,7 +129,7 @@ object DiagnosticLogger {
     fun exportAsText(): String {
         val sb = StringBuilder()
         sb.appendLine("╔════════════════════════════════════════════════════════════╗")
-        sb.appendLine("║  MT File Manager — Diagnostic Log                      ║")
+        sb.appendLine("║  XD Manager — Diagnostic Log                      ║")
         sb.appendLine("║  ${formatTimestamp(sessionStartTime).padEnd(54)}║")
         sb.appendLine("╚════════════════════════════════════════════════════════════╝")
         sb.appendLine()

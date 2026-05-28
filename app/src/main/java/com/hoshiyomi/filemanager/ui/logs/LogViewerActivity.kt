@@ -84,12 +84,12 @@ class LogViewerActivity : AppCompatActivity() {
 
     private fun copyFullLog() {
         val logText = DiagnosticLogger.exportAsText()
-        copyToClipboard("MT File Manager Diagnostic Log", logText)
+        copyToClipboard("XD Manager Diagnostic Log", logText)
     }
 
     private fun copyDiagnosticSummary() {
         val summary = DiagnosticLogger.buildAppDiagnosticSummary()
-        copyToClipboard("MT File Manager Diagnostic Summary", summary)
+        copyToClipboard("XD Manager Diagnostic Summary", summary)
     }
 
     private fun copyToClipboard(label: String, text: String) {
@@ -103,7 +103,7 @@ class LogViewerActivity : AppCompatActivity() {
         val logText = DiagnosticLogger.exportAsText()
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "MT File Manager Diagnostic Log")
+            putExtra(Intent.EXTRA_SUBJECT, "XD Manager Diagnostic Log")
             putExtra(Intent.EXTRA_TEXT, logText)
         }
         startActivity(Intent.createChooser(intent, getString(R.string.log_share)))

@@ -192,7 +192,6 @@ class FileManagerFragment : Fragment() {
         binding.btnUnifiedUp.setOnClickListener { navigateUp(leftPanelActive) }
         binding.btnPathCreateNew.setOnClickListener { showCreateNewDialog() }
         binding.btnPathSort.setOnClickListener { showSortDialog() }
-        binding.btnPathFilter.setOnClickListener { showFilterDialog() }
     }
 
     private fun showCreateNewDialog() {
@@ -206,53 +205,6 @@ class FileManagerFragment : Fragment() {
                 when (which) {
                     0 -> showNewFolderDialog()
                     1 -> showNewFileDialog()
-                }
-            }
-            .show()
-    }
-
-    private fun showFilterDialog() {
-        val options = arrayOf(
-            getString(R.string.path_bar_filter_all),
-            getString(R.string.path_bar_filter_hidden),
-            getString(R.string.path_bar_filter_apk),
-            getString(R.string.path_bar_filter_image),
-            getString(R.string.path_bar_filter_video),
-            getString(R.string.path_bar_filter_audio),
-            getString(R.string.path_bar_filter_document),
-            getString(R.string.path_bar_filter_archive)
-        )
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.path_bar_filter_title)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> {
-                        showHiddenFiles = false
-                        viewModel.setShowHidden(false)
-                        viewModel.clearFileFilter()
-                        loadFilesForPanel(true)
-                        loadFilesForPanel(false)
-                    }
-                    1 -> {
-                        showHiddenFiles = !showHiddenFiles
-                        viewModel.setShowHidden(showHiddenFiles)
-                        loadFilesForPanel(true)
-                        loadFilesForPanel(false)
-                    }
-                    else -> {
-                        val filterType = when (which) {
-                            2 -> "apk"
-                            3 -> "image"
-                            4 -> "video"
-                            5 -> "audio"
-                            6 -> "document"
-                            7 -> "archive"
-                            else -> null
-                        }
-                        filterType?.let { viewModel.setFileFilter(it) }
-                        loadFilesForPanel(true)
-                        loadFilesForPanel(false)
-                    }
                 }
             }
             .show()

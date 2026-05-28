@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App -->
-    <string name="app_name">MT File Manager</string>
+    <string name="app_name">XD Manager</string>
 
     <!-- Navigation -->
     <string name="nav_files">Files</string>
@@ -12,17 +12,7 @@
     <!-- Path Bar -->
     <string name="path_bar_create_new">Create New</string>
     <string name="path_bar_sort">Sort</string>
-    <string name="path_bar_filter">Filter</string>
     <string name="path_bar_create_title">Create New</string>
-    <string name="path_bar_filter_title">Filter</string>
-    <string name="path_bar_filter_hidden">Show Hidden Files</string>
-    <string name="path_bar_filter_apk">APK Files Only</string>
-    <string name="path_bar_filter_image">Image Files Only</string>
-    <string name="path_bar_filter_video">Video Files Only</string>
-    <string name="path_bar_filter_audio">Audio Files Only</string>
-    <string name="path_bar_filter_document">Document Files Only</string>
-    <string name="path_bar_filter_archive">Archive Files Only</string>
-    <string name="path_bar_filter_all">All Files</string>
 
     <!-- File Operations -->
     <string name="action_copy">Copy</string>

@@ -1,19 +1,26 @@
 package com.hoshiyomi.filemanager.ui.filemanager
 
+import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hoshiyomi.filemanager.R
 import com.hoshiyomi.filemanager.databinding.FragmentHistoryBinding
 import java.io.File
 
-class HistoryFragment : Fragment() {
+class HistoryFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentHistoryBinding? = null
     private val binding get() = _binding!!
@@ -35,6 +42,24 @@ class HistoryFragment : Fragment() {
         setupRecyclerView()
         setupListeners()
         loadHistory()
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.setOnShowListener { dialogInterface ->
+            val bottomSheet = (dialogInterface as BottomSheetDialog)
+                .findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout?
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                val screenHeight = resources.displayMetrics.heightPixels
+                behavior.peekHeight = (screenHeight * 0.2).toInt()
+                behavior.isDraggable = true
+                behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+        // Make background dim semi-transparent so file explorer is visible behind
+        dialog.window?.setDimAmount(0.3f)
+        return dialog
     }
 
     private fun setupRecyclerView() {
@@ -82,6 +107,7 @@ class HistoryFragment : Fragment() {
     private fun navigateToPath(path: String) {
         val file = File(path)
         if (file.exists() && file.isDirectory && file.canRead()) {
+            dismiss()
             val fragment = FileManagerFragment.newInstance(path)
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment, "file_manager")
@@ -104,9 +130,9 @@ class HistoryFragment : Fragment() {
                 when (options[which]) {
                     getString(R.string.history_open) -> navigateToPath(path)
                     getString(R.string.action_copy) -> {
-                        android.content.ClipData.newPlainText("path", path).let {
-                            requireActivity().getSystemService(android.content.Context.CLIPBOARD_SERVICE)
-                                ?.let { cm -> (cm as android.content.ClipboardManager).setPrimaryClip(it) }
+                        ClipData.newPlainText("path", path).let {
+                            requireActivity().getSystemService(Context.CLIPBOARD_SERVICE)
+                                ?.let { cm -> (cm as ClipboardManager).setPrimaryClip(it) }
                         }
                         Toast.makeText(context, R.string.history_path_copied, Toast.LENGTH_SHORT).show()
                     }
@@ -127,5 +153,10 @@ class HistoryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val TAG = "HistoryBottomSheet"
+        fun newInstance(): HistoryFragment = HistoryFragment()
     }
 }

@@ -78,9 +78,26 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
             } else {
                 result
             }
-            val sorted = filtered.sortedWith(
-                compareByDescending<FileItem> { it.isDirectory }.thenBy { it.name.lowercase() }
-            )
+            val sortMode = _sortMode.value
+            val isAscending = _sortOrder.value == SortOrder.ASCENDING
+            val sorted = when (sortMode) {
+                SortMode.NAME -> {
+                    if (isAscending) filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenBy { it.name.lowercase() })
+                    else filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenByDescending { it.name.lowercase() })
+                }
+                SortMode.SIZE -> {
+                    if (isAscending) filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenBy { it.file.length() })
+                    else filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenByDescending { it.file.length() })
+                }
+                SortMode.DATE -> {
+                    if (isAscending) filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenBy { it.file.lastModified() })
+                    else filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenByDescending { it.file.lastModified() })
+                }
+                SortMode.TYPE -> {
+                    if (isAscending) filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenBy { it.extension.lowercase() }.thenBy { it.name.lowercase() })
+                    else filtered.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenByDescending { it.extension.lowercase() }.thenByDescending { it.name.lowercase() })
+                }
+            }
             targetState.value = PanelFilesState(files = sorted, isLoading = false)
         }
     }

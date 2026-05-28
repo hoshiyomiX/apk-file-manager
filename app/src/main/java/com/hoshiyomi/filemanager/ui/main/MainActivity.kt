@@ -173,9 +173,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadHistoryFragment() {
-        val fragment = HistoryFragment()
-        replaceFragment(fragment, "history")
-        binding.bottomNavigation.menu.findItem(R.id.nav_history)?.isChecked = true
+        val historySheet = HistoryFragment.newInstance()
+        historySheet.show(supportFragmentManager, HistoryFragment.TAG)
     }
 
     private fun replaceFragment(fragment: Fragment, tag: String) {

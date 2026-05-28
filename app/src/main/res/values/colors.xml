@@ -35,6 +35,9 @@
     <color name="text_icon_color">#8D6E63</color>
     <color name="archive_icon_color">#8D6E63</color>
 
+    <!-- Active panel highlight -->
+    <color name="panel_active_bg">#E8F5E9</color>
+
     <!-- Selection -->
     <color name="selection_background">#1B6B5220</color>
     <color name="divider_color">#E0E0E0</color>

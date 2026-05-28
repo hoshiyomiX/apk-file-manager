@@ -5,225 +5,191 @@
     android:id="@+id/rootPanel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context=".ui.main.MainActivity">
 
-    <!-- Left Panel -->
+    <!-- Unified Path Bar -->
     <LinearLayout
-        android:id="@+id/leftPanel"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:id="@+id/unifiedPathBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/md_theme_surface"
+        android:paddingStart="@dimen/spacing_sm"
+        android:paddingEnd="@dimen/spacing_sm"
+        android:elevation="2dp">
 
-        <!-- Left Panel Toolbar -->
-        <LinearLayout
-            android:id="@+id/leftPanelToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@color/md_theme_surface"
-            android:paddingStart="@dimen/spacing_sm"
-            android:paddingEnd="@dimen/spacing_sm"
-            android:elevation="2dp">
+        <ImageButton
+            android:id="@+id/btnUnifiedUp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_arrow_up"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/up"
+            android:padding="2dp"
+            app:tint="@color/md_theme_on_surface" />
 
-            <ImageButton
-                android:id="@+id/btnLeftUp"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_up"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/up"
-                android:padding="2dp"
-                app:tint="@color/md_theme_on_surface" />
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scrollbars="none"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:layout_marginEnd="@dimen/spacing_sm">
 
-            <HorizontalScrollView
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvUnifiedPath"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:scrollbars="none"
-                android:layout_marginStart="@dimen/spacing_sm">
+                android:maxLines="1"
+                android:ellipsize="middle"
+                android:textColor="@color/md_theme_on_surface"
+                android:textSize="14sp"
+                android:paddingVertical="4dp" />
 
-                <TextView
-                    android:id="@+id/tvLeftPath"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:ellipsize="middle"
-                    android:textColor="@color/md_theme_on_surface"
-                    android:textSize="14sp"
-                    android:paddingVertical="4dp" />
+        </HorizontalScrollView>
 
-            </HorizontalScrollView>
+        <ImageButton
+            android:id="@+id/btnUnifiedRefresh"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_refresh"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/refresh"
+            android:padding="2dp"
+            app:tint="@color/md_theme_on_surface" />
 
-            <ImageButton
-                android:id="@+id/btnLeftRefresh"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_refresh"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/refresh"
-                android:padding="2dp"
-                app:tint="@color/md_theme_on_surface" />
-
-            <ImageButton
-                android:id="@+id/btnLeftMore"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_more_vert"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/more_options"
-                android:padding="2dp"
-                app:tint="@color/md_theme_on_surface" />
-
-        </LinearLayout>
-
-        <!-- Left Panel File List -->
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeLeftRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvLeftFiles"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingVertical="@dimen/spacing_xs"
-                    tools:listitem="@layout/item_file" />
-
-                <TextView
-                    android:id="@+id/tvLeftEmpty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/empty_folder"
-                    android:textColor="@color/md_theme_on_surface_variant"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-            </FrameLayout>
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <ImageButton
+            android:id="@+id/btnUnifiedMore"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_more_vert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/more_options"
+            android:padding="2dp"
+            app:tint="@color/md_theme_on_surface" />
 
     </LinearLayout>
 
-    <!-- Divider -->
-    <View
-        android:id="@+id/panelDivider"
-        android:layout_width="@dimen/dual_panel_divider_width"
-        android:layout_height="match_parent"
-        android:background="@color/md_theme_outline_variant" />
-
-    <!-- Right Panel -->
+    <!-- Dual Panel Container -->
     <LinearLayout
-        android:id="@+id/rightPanel"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:id="@+id/dualPanelContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <!-- Right Panel Toolbar -->
+        <!-- Left Panel -->
         <LinearLayout
-            android:id="@+id/rightPanelToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@color/md_theme_surface"
-            android:paddingStart="@dimen/spacing_sm"
-            android:paddingEnd="@dimen/spacing_sm"
-            android:elevation="2dp">
+            android:id="@+id/leftPanel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@color/md_theme_background">
 
-            <ImageButton
-                android:id="@+id/btnRightUp"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_up"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/up"
-                android:padding="2dp"
-                app:tint="@color/md_theme_on_surface" />
+            <!-- Active Panel Indicator (Left) -->
+            <View
+                android:id="@+id/leftPanelIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/md_theme_primary"
+                android:visibility="visible" />
 
-            <HorizontalScrollView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:scrollbars="none"
-                android:layout_marginStart="@dimen/spacing_sm">
+            <!-- Left Panel File List -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeLeftRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
-                <TextView
-                    android:id="@+id/tvRightPath"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:ellipsize="middle"
-                    android:textColor="@color/md_theme_on_surface"
-                    android:textSize="14sp"
-                    android:paddingVertical="4dp" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            </HorizontalScrollView>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvLeftFiles"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        tools:listitem="@layout/item_file" />
 
-            <ImageButton
-                android:id="@+id/btnRightRefresh"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_refresh"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/refresh"
-                android:padding="2dp"
-                app:tint="@color/md_theme_on_surface" />
+                    <TextView
+                        android:id="@+id/tvLeftEmpty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/empty_folder"
+                        android:textColor="@color/md_theme_on_surface_variant"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
 
-            <ImageButton
-                android:id="@+id/btnRightMore"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_more_vert"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/more_options"
-                android:padding="2dp"
-                app:tint="@color/md_theme_on_surface" />
+                </FrameLayout>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         </LinearLayout>
 
-        <!-- Right Panel File List -->
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRightRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+        <!-- Divider -->
+        <View
+            android:id="@+id/panelDivider"
+            android:layout_width="@dimen/dual_panel_divider_width"
+            android:layout_height="match_parent"
+            android:background="@color/md_theme_outline_variant" />
 
-            <FrameLayout
+        <!-- Right Panel -->
+        <LinearLayout
+            android:id="@+id/rightPanel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@color/md_theme_background">
+
+            <!-- Active Panel Indicator (Right) -->
+            <View
+                android:id="@+id/rightPanelIndicator"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="3dp"
+                android:background="@color/md_theme_primary"
+                android:visibility="invisible" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvRightFiles"
+            <!-- Right Panel File List -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRightRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingVertical="@dimen/spacing_xs"
-                    tools:listitem="@layout/item_file" />
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/tvRightEmpty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/empty_folder"
-                    android:textColor="@color/md_theme_on_surface_variant"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvRightFiles"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingVertical="@dimen/spacing_xs"
+                        tools:listitem="@layout/item_file" />
 
-            </FrameLayout>
+                    <TextView
+                        android:id="@+id/tvRightEmpty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/empty_folder"
+                        android:textColor="@color/md_theme_on_surface_variant"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                </FrameLayout>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

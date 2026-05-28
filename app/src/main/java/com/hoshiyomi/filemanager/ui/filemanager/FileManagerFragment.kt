@@ -93,6 +93,8 @@ class FileManagerFragment : Fragment() {
         setupSwipeRefresh()
         setupPanelButtons()
         observeViewModel()
+        updateActivePanelHighlight()
+        updateUnifiedPathBar()
 
         val startPath = arguments?.getString(ARG_START_PATH)
         val homeDir = if (!startPath.isNullOrBlank()) File(startPath) else FileUtils.getStorageDirectories(requireContext()).firstOrNull() ?: File("/")
@@ -213,21 +215,60 @@ class FileManagerFragment : Fragment() {
         }
     }
 
-    private fun setupPanelButtons() {
-        binding.btnLeftUp.setOnClickListener { navigateUp(true) }
-        binding.btnRightUp.setOnClickListener { navigateUp(false) }
-        binding.btnLeftRefresh.setOnClickListener { loadFilesForPanel(true) }
-        binding.btnRightRefresh.setOnClickListener { loadFilesForPanel(false) }
-        binding.btnLeftMore.setOnClickListener { showPanelMoreOptions(true) }
-        binding.btnRightMore.setOnClickListener { showPanelMoreOptions(false) }
+    private fun setupUnifiedPathBar() {
+        binding.btnUnifiedUp.setOnClickListener { navigateUp(leftPanelActive) }
+        binding.btnUnifiedRefresh.setOnClickListener { loadFilesForPanel(leftPanelActive) }
+        binding.btnUnifiedMore.setOnClickListener { showPanelMoreOptions(leftPanelActive) }
+    }
 
+    private fun updateActivePanelHighlight() {
+        if (leftPanelActive) {
+            binding.leftPanelIndicator.visibility = View.VISIBLE
+            binding.rightPanelIndicator.visibility = View.INVISIBLE
+            binding.leftPanel.setBackgroundColor(resources.getColor(R.color.panel_active_bg, null))
+            binding.rightPanel.setBackgroundColor(resources.getColor(R.color.md_theme_background, null))
+        } else {
+            binding.leftPanelIndicator.visibility = View.INVISIBLE
+            binding.rightPanelIndicator.visibility = View.VISIBLE
+            binding.leftPanel.setBackgroundColor(resources.getColor(R.color.md_theme_background, null))
+            binding.rightPanel.setBackgroundColor(resources.getColor(R.color.panel_active_bg, null))
+        }
+    }
+
+    private fun setupPanelButtons() {
+        // Unified path bar handles up, refresh, more
+        setupUnifiedPathBar()
+
+        // Tap on RecyclerView to switch active panel
         binding.rvLeftFiles.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             leftPanelActive = true
             updateSelectionCount()
+            updateUnifiedPathBar()
+            updateActivePanelHighlight()
         }
         binding.rvRightFiles.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             leftPanelActive = false
             updateSelectionCount()
+            updateUnifiedPathBar()
+            updateActivePanelHighlight()
+        }
+
+        // Touch on SwipeRefreshLayout to switch active panel
+        binding.swipeLeftRefresh.setOnTouchListener { _, _ ->
+            if (!leftPanelActive) {
+                leftPanelActive = true
+                updateUnifiedPathBar()
+                updateActivePanelHighlight()
+            }
+            false
+        }
+        binding.swipeRightRefresh.setOnTouchListener { _, _ ->
+            if (leftPanelActive) {
+                leftPanelActive = false
+                updateUnifiedPathBar()
+                updateActivePanelHighlight()
+            }
+            false
         }
     }
 
@@ -278,12 +319,17 @@ class FileManagerFragment : Fragment() {
     }
 
     private fun updatePathDisplay(isLeft: Boolean, path: File) {
-        val pathText = if (path.absolutePath == "/") "/" else path.absolutePath
-        if (isLeft) {
-            binding.tvLeftPath.text = pathText
-        } else {
-            binding.tvRightPath.text = pathText
+        // Update unified path bar if the changed panel is active
+        if (isLeft == leftPanelActive) {
+            val pathText = if (path.absolutePath == "/") "/" else path.absolutePath
+            binding.tvUnifiedPath.text = pathText
         }
+    }
+
+    private fun updateUnifiedPathBar() {
+        val path = if (leftPanelActive) leftCurrentPath else rightCurrentPath
+        val pathText = if (path.absolutePath == "/") "/" else path.absolutePath
+        binding.tvUnifiedPath.text = pathText
     }
 
     private fun updateEmptyState(isLeft: Boolean, isEmpty: Boolean) {
@@ -302,6 +348,13 @@ class FileManagerFragment : Fragment() {
             return
         }
 
+        // Switch active panel on click
+        if (isLeft != leftPanelActive) {
+            leftPanelActive = isLeft
+            updateUnifiedPathBar()
+            updateActivePanelHighlight()
+        }
+
         if (fileItem.isDirectory) {
             navigateTo(fileItem.file, isLeft)
         } else {
@@ -312,6 +365,14 @@ class FileManagerFragment : Fragment() {
     private fun onFileLongClick(fileItem: FileItem, isLeft: Boolean) {
         contextMenuPanelIsLeft = isLeft
         contextMenuFileItem = fileItem
+
+        // Switch active panel on long click
+        if (isLeft != leftPanelActive) {
+            leftPanelActive = isLeft
+            updateUnifiedPathBar()
+            updateActivePanelHighlight()
+        }
+
         val adapter = getAdapter(isLeft)
         if (!adapter.isMultiSelectMode()) {
             showContextMenu(fileItem, isLeft)

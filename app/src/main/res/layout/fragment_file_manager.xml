@@ -52,22 +52,32 @@
         </HorizontalScrollView>
 
         <ImageButton
-            android:id="@+id/btnUnifiedRefresh"
+            android:id="@+id/btnPathCreateNew"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_refresh"
+            android:src="@drawable/ic_add"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/refresh"
+            android:contentDescription="@string/path_bar_create_new"
             android:padding="6dp"
             app:tint="@color/md_theme_on_surface" />
 
         <ImageButton
-            android:id="@+id/btnUnifiedMore"
+            android:id="@+id/btnPathSort"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_more_vert"
+            android:src="@drawable/ic_sort"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/more_options"
+            android:contentDescription="@string/path_bar_sort"
+            android:padding="6dp"
+            app:tint="@color/md_theme_on_surface" />
+
+        <ImageButton
+            android:id="@+id/btnPathFilter"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_filter"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/path_bar_filter"
             android:padding="6dp"
             app:tint="@color/md_theme_on_surface" />
 

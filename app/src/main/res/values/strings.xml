@@ -9,12 +9,27 @@
     <string name="nav_tools">Tools</string>
     <string name="nav_apk_viewer">APK Tools</string>
 
+    <!-- Path Bar -->
+    <string name="path_bar_create_new">Create New</string>
+    <string name="path_bar_sort">Sort</string>
+    <string name="path_bar_filter">Filter</string>
+    <string name="path_bar_create_title">Create New</string>
+    <string name="path_bar_filter_title">Filter</string>
+    <string name="path_bar_filter_hidden">Show Hidden Files</string>
+    <string name="path_bar_filter_apk">APK Files Only</string>
+    <string name="path_bar_filter_image">Image Files Only</string>
+    <string name="path_bar_filter_video">Video Files Only</string>
+    <string name="path_bar_filter_audio">Audio Files Only</string>
+    <string name="path_bar_filter_document">Document Files Only</string>
+    <string name="path_bar_filter_archive">Archive Files Only</string>
+    <string name="path_bar_filter_all">All Files</string>
+
     <!-- File Operations -->
     <string name="action_copy">Copy</string>
     <string name="action_cut">Cut</string>
     <string name="action_paste">Paste</string>
-    <string name="action_paste_here">Paste Here</string>
-    <string name="action_move_to_panel">Move to %1$s Panel</string>
+    <string name="action_paste_here">Paste</string>
+    <string name="action_move_to_panel">Move to %1$s</string>
     <string name="action_rename">Rename</string>
     <string name="action_delete">Delete</string>
     <string name="action_properties">Properties</string>
@@ -22,11 +37,12 @@
     <string name="action_new_folder">New Folder</string>
     <string name="action_new_file">New File</string>
     <string name="action_compress">Compress</string>
-    <string name="action_extract">Extract</string>
-    <string name="action_bookmark">Bookmark</string>
+    <string name="action_extract">Extract Here</string>
+    <string name="action_bookmark">Add Bookmark</string>
     <string name="action_open">Open</string>
     <string name="action_edit">Edit</string>
     <string name="action_share">Share</string>
+    <string name="action_info">Info</string>
 
     <!-- APK Viewer -->
     <string name="apk_info">APK Info</string>

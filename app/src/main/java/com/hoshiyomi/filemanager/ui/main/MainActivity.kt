@@ -304,10 +304,6 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         return when (item.itemId) {
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
             R.id.action_bookmarks -> {
                 val fragment = currentFragment
                 if (fragment is FileManagerFragment) {

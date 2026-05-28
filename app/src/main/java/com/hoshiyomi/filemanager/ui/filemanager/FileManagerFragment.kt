@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hoshiyomi.filemanager.R
-import com.hoshiyomi.filemanager.core.archive.ArchiveManager
 import com.hoshiyomi.filemanager.databinding.DialogConfirmBinding
 import com.hoshiyomi.filemanager.databinding.DialogInputBinding
 import com.hoshiyomi.filemanager.databinding.DialogSortBinding
@@ -134,26 +133,6 @@ class FileManagerFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.action_new_folder -> {
-                        showNewFolderDialog()
-                        true
-                    }
-                    R.id.action_new_file -> {
-                        showNewFileDialog()
-                        true
-                    }
-                    R.id.action_sort -> {
-                        showSortDialog()
-                        true
-                    }
-                    R.id.action_show_hidden -> {
-                        showHiddenFiles = !showHiddenFiles
-                        menuItem.isChecked = showHiddenFiles
-                        viewModel.setShowHidden(showHiddenFiles)
-                        loadFilesForPanel(true)
-                        loadFilesForPanel(false)
-                        true
-                    }
                     R.id.action_select_all -> {
                         getActiveAdapter().selectAll()
                         true
@@ -163,16 +142,8 @@ class FileManagerFragment : Fragment() {
                         bookmarkPath(currentPath.absolutePath)
                         true
                     }
-                    R.id.action_paste -> {
-                        pasteFiles()
-                        true
-                    }
                     R.id.action_compress -> {
                         showCompressDialog()
-                        true
-                    }
-                    R.id.action_extract -> {
-                        extractArchive()
                         true
                     }
                     R.id.action_properties -> {
@@ -219,8 +190,72 @@ class FileManagerFragment : Fragment() {
 
     private fun setupUnifiedPathBar() {
         binding.btnUnifiedUp.setOnClickListener { navigateUp(leftPanelActive) }
-        binding.btnUnifiedRefresh.setOnClickListener { loadFilesForPanel(leftPanelActive) }
-        binding.btnUnifiedMore.setOnClickListener { showPanelMoreOptions(leftPanelActive) }
+        binding.btnPathCreateNew.setOnClickListener { showCreateNewDialog() }
+        binding.btnPathSort.setOnClickListener { showSortDialog() }
+        binding.btnPathFilter.setOnClickListener { showFilterDialog() }
+    }
+
+    private fun showCreateNewDialog() {
+        val options = arrayOf(
+            getString(R.string.action_new_folder),
+            getString(R.string.action_new_file)
+        )
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.path_bar_create_title)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showNewFolderDialog()
+                    1 -> showNewFileDialog()
+                }
+            }
+            .show()
+    }
+
+    private fun showFilterDialog() {
+        val options = arrayOf(
+            getString(R.string.path_bar_filter_all),
+            getString(R.string.path_bar_filter_hidden),
+            getString(R.string.path_bar_filter_apk),
+            getString(R.string.path_bar_filter_image),
+            getString(R.string.path_bar_filter_video),
+            getString(R.string.path_bar_filter_audio),
+            getString(R.string.path_bar_filter_document),
+            getString(R.string.path_bar_filter_archive)
+        )
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.path_bar_filter_title)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        showHiddenFiles = false
+                        viewModel.setShowHidden(false)
+                        viewModel.clearFileFilter()
+                        loadFilesForPanel(true)
+                        loadFilesForPanel(false)
+                    }
+                    1 -> {
+                        showHiddenFiles = !showHiddenFiles
+                        viewModel.setShowHidden(showHiddenFiles)
+                        loadFilesForPanel(true)
+                        loadFilesForPanel(false)
+                    }
+                    else -> {
+                        val filterType = when (which) {
+                            2 -> "apk"
+                            3 -> "image"
+                            4 -> "video"
+                            5 -> "audio"
+                            6 -> "document"
+                            7 -> "archive"
+                            else -> null
+                        }
+                        filterType?.let { viewModel.setFileFilter(it) }
+                        loadFilesForPanel(true)
+                        loadFilesForPanel(false)
+                    }
+                }
+            }
+            .show()
     }
 
     private fun updateActivePanelHighlight() {
@@ -238,7 +273,6 @@ class FileManagerFragment : Fragment() {
     }
 
     private fun setupPanelButtons() {
-        // Unified path bar handles up, refresh, more
         setupUnifiedPathBar()
 
         // Intercept touch on RecyclerViews to switch active panel on first touch (ACTION_DOWN)
@@ -294,9 +328,7 @@ class FileManagerFragment : Fragment() {
                     }
                 }
                 launch {
-                    viewModel.clipboard.collect { clip ->
-                        updatePasteMenuItem(clip != null)
-                    }
+                    viewModel.clipboard.collect { }
                 }
             }
         }
@@ -466,13 +498,15 @@ class FileManagerFragment : Fragment() {
         menuItems.add(getString(R.string.action_rename))
         menuItems.add(getString(R.string.action_delete))
         menuItems.add(getString(R.string.action_bookmark))
-        menuItems.add(getString(R.string.action_properties))
+        menuItems.add(getString(R.string.action_info))
         if (fileItem.isArchive) {
             menuItems.add(getString(R.string.action_extract))
         }
 
+        val subtitle = fileItem.file.absolutePath
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(fileItem.name)
+            .setMessage(subtitle)
             .setItems(menuItems.toTypedArray()) { _, which ->
                 when {
                     menuItems[which] == getString(R.string.action_open) -> {
@@ -518,7 +552,7 @@ class FileManagerFragment : Fragment() {
                     menuItems[which] == getString(R.string.action_bookmark) -> {
                         bookmarkPath(fileItem.file.absolutePath)
                     }
-                    menuItems[which] == getString(R.string.action_properties) -> {
+                    menuItems[which] == getString(R.string.action_info) -> {
                         showFileProperties(fileItem)
                     }
                     menuItems[which] == getString(R.string.action_extract) -> {
@@ -754,51 +788,6 @@ class FileManagerFragment : Fragment() {
             .show()
     }
 
-    private fun showPanelMoreOptions(isLeft: Boolean) {
-        leftPanelActive = isLeft
-        val options = mutableListOf(
-            getString(R.string.action_new_folder),
-            getString(R.string.action_new_file),
-            getString(R.string.action_bookmark),
-            getString(R.string.action_select_all),
-            getString(R.string.sort_name),
-            getString(R.string.bookmarks)
-        )
-        if (viewModel.hasClipboard()) {
-            options.add(getString(R.string.action_paste))
-        }
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.more_options)
-            .setItems(options.toTypedArray()) { _, which ->
-                when (options[which]) {
-                    getString(R.string.action_new_folder) -> {
-                        leftPanelActive = isLeft
-                        showNewFolderDialog()
-                    }
-                    getString(R.string.action_new_file) -> {
-                        leftPanelActive = isLeft
-                        showNewFileDialog()
-                    }
-                    getString(R.string.action_bookmark) -> {
-                        val path = if (isLeft) leftCurrentPath else rightCurrentPath
-                        bookmarkPath(path.absolutePath)
-                    }
-                    getString(R.string.action_select_all) -> {
-                        getAdapter(isLeft).setMultiSelectMode(true)
-                        getAdapter(isLeft).selectAll()
-                    }
-                    getString(R.string.sort_name) -> showSortDialog()
-                    getString(R.string.bookmarks) -> doShowBookmarksDialog()
-                    getString(R.string.action_paste) -> {
-                        leftPanelActive = isLeft
-                        pasteFiles()
-                    }
-                }
-            }
-            .show()
-    }
-
     private fun doShowBookmarksDialog() {
         val bookmarks = viewModel.getBookmarks()
         if (bookmarks.isEmpty()) {
@@ -843,14 +832,6 @@ class FileManagerFragment : Fragment() {
         }
     }
 
-    private fun extractArchive() {
-        contextMenuFileItem?.let { fileItem ->
-            if (fileItem.isArchive) {
-                showExtractDialog(fileItem)
-            }
-        }
-    }
-
     private fun performSearch(query: String?) {
         if (query.isNullOrBlank()) return
         val currentPath = if (leftPanelActive) leftCurrentPath else rightCurrentPath
@@ -871,10 +852,6 @@ class FileManagerFragment : Fragment() {
                 activity.supportActionBar?.title = getString(R.string.app_name)
             }
         }
-    }
-
-    private fun updatePasteMenuItem(hasClipboard: Boolean) {
-        // Menu items visibility is handled through options menu
     }
 
     private fun getActiveAdapter(): FileListAdapter = if (leftPanelActive) leftAdapter else rightAdapter

@@ -49,6 +49,9 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     private val _showHidden = MutableStateFlow(loadBooleanPref(KEY_SHOW_HIDDEN, false))
     val showHidden: StateFlow<Boolean> = _showHidden.asStateFlow()
 
+    private val _fileFilter = MutableStateFlow<String?>(null)
+    val fileFilter: StateFlow<String?> = _fileFilter.asStateFlow()
+
     private val _sortMode = MutableStateFlow(
         SortMode.values().getOrElse(loadIntPref(KEY_SORT_MODE, 0)) { SortMode.NAME }
     )
@@ -70,7 +73,12 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
                 _sortMode.value,
                 _sortOrder.value
             )
-            val sorted = result.sortedWith(
+            val filtered = if (_fileFilter.value != null) {
+                filterByType(result, _fileFilter.value!!)
+            } else {
+                result
+            }
+            val sorted = filtered.sortedWith(
                 compareByDescending<FileItem> { it.isDirectory }.thenBy { it.name.lowercase() }
             )
             targetState.value = PanelFilesState(files = sorted, isLoading = false)
@@ -155,6 +163,14 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     fun setShowHidden(show: Boolean) {
         _showHidden.value = show
         saveBooleanPref(KEY_SHOW_HIDDEN, show)
+    }
+
+    fun setFileFilter(filterType: String?) {
+        _fileFilter.value = filterType
+    }
+
+    fun clearFileFilter() {
+        _fileFilter.value = null
     }
 
     fun setSortMode(mode: SortMode) {
@@ -251,6 +267,18 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
             val arr = JSONArray(raw)
             (0 until arr.length()).map { arr.getString(it) }
         } catch (_: Exception) { emptyList() }
+    }
+
+    private fun filterByType(files: List<FileItem>, type: String): List<FileItem> {
+        return when (type) {
+            "apk" -> files.filter { it.isApk }
+            "image" -> files.filter { it.isImage }
+            "video" -> files.filter { it.isVideo }
+            "audio" -> files.filter { it.isAudio }
+            "document" -> files.filter { it.isText }
+            "archive" -> files.filter { it.isArchive }
+            else -> files
+        }
     }
 
     private fun loadBooleanPref(key: String, default: Boolean): Boolean {
